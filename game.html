@@ -7,9 +7,9 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background-color: #000;
+            background-color: #0b0b0b;
             color: #fff;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             margin: 0;
             overflow: hidden;
@@ -18,87 +18,115 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            user-select: none;
         }
 
-        #balance {
-            font-size: 42px;
-            margin-bottom: 20px;
-            font-weight: bold;
-            color: #ffd700;
+        #balance-container {
+            font-size: 48px;
+            margin-bottom: 10px;
+            font-weight: 800;
+            color: #f3ba2f; /* Золотой цвет Binance */
+            text-shadow: 0 0 20px rgba(243, 186, 47, 0.5);
         }
 
         .coin-container {
             position: relative;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: transform 0.05s;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .coin-container:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
         }
 
-        /* Здесь будет твоя монета N */
         .coin {
-            width: 250px;
-            height: 250px;
-            background: url('ТВОЯ_ССЫЛКА_НА_ИЗОБРАЖЕНИЕ_N_МОНЕТЫ') no-repeat center;
+            width: 280px;
+            height: 280px;
+            /* Используем твою картинку из гитхаба */
+            background: url('coin.png') no-repeat center;
             background-size: contain;
-            border-radius: 50%;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            filter: drop-shadow(0 0 30px rgba(243, 186, 47, 0.4));
+        }
+
+        .stats {
+            margin-top: 40px;
+            width: 80%;
         }
 
         .energy-bar {
-            width: 80%;
-            height: 10px;
-            background: #333;
-            border-radius: 5px;
-            margin-top: 30px;
+            width: 100%;
+            height: 12px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #333;
         }
 
         .energy-fill {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, #ffd700, #ff8c00);
-            border-radius: 5px;
+            background: linear-gradient(90deg, #f3ba2f, #ffdc2a);
+            transition: width 0.2s;
+        }
+
+        .energy-text {
+            margin-top: 8px;
+            font-size: 18px;
+            color: #aaa;
         }
     </style>
 </head>
 <body>
 
-    <div id="balance">0</div>
+    <div id="balance-container">0</div>
     
     <div class="coin-container" onclick="handleTap(event)">
         <div class="coin"></div>
     </div>
 
-    <div class="energy-bar">
-        <div id="energy" class="energy-fill"></div>
+    <div class="stats">
+        <div class="energy-bar">
+            <div id="energy" class="energy-fill"></div>
+        </div>
+        <div class="energy-text">⚡️ <span id="energy-value">1000</span> / 1000</div>
     </div>
-    <p>Energy: <span id="energy-text">1000</span>/1000</p>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем на весь экран
+        tg.expand();
 
-        let coins = 0;
+        let coins = Number(localStorage.getItem('coins')) || 0;
         let energy = 1000;
 
+        document.getElementById('balance-container').innerText = coins.toLocaleString();
+
         function handleTap(event) {
-            if (energy > 0) {
+            if (energy >= 1) {
                 coins += 1;
                 energy -= 1;
-                updateUI();
                 
-                // Вибрация (только на телефонах)
-                tg.HapticFeedback.impactOccurred('medium');
+                // Сохраняем в память браузера (пока без базы данных)
+                localStorage.setItem('coins', coins);
+                
+                updateUI();
+                tg.HapticFeedback.impactOccurred('light');
             }
         }
 
         function updateUI() {
-            document.getElementById('balance').innerText = coins;
-            document.getElementById('energy-text').innerText = energy;
+            document.getElementById('balance-container').innerText = coins.toLocaleString();
+            document.getElementById('energy-value').innerText = energy;
             document.getElementById('energy').style.width = (energy / 10) + '%';
         }
+
+        // Регенерация энергии каждые 3 секунды
+        setInterval(() => {
+            if (energy < 1000) {
+                energy += 1;
+                updateUI();
+            }
+        }, 3000);
     </script>
 </body>
 </html>
