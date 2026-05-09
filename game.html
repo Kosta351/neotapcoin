@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeoTapCoin RU</title>
+    <title>NeoTapCoin Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -37,36 +37,41 @@
         .page { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 120px; }
         .active { display: flex; }
 
-        /* Шапка */
         .header { margin-top: 30px; text-align: center; width: 100%; }
         #league-name { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
         #balance { font-size: 48px; font-weight: 900; color: var(--gold); }
 
-        /* Монета */
         .coin-section { position: relative; margin-top: 40px; }
         .coin { width: 280px; height: 280px; background: url('coin.png') no-repeat center; background-size: contain; transition: transform 0.1s; cursor: pointer; }
         
-        /* Эффект Турбо */
         .turbo-mode .coin { filter: drop-shadow(0 0 40px #ff4500); animation: pulse-turbo 0.3s infinite; }
         @keyframes pulse-turbo { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
 
         .turbo-timer { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #ff4500; font-weight: 900; font-size: 20px; display: none; }
         .turbo-mode .turbo-timer { display: block; }
 
-        /* Карточки магазина */
         .card-list { width: 92%; margin-top: 15px; }
         .card { background: var(--card); border-radius: 18px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
-        .card-info { text-align: left; }
+        .card-info { text-align: left; display: flex; align-items: center; gap: 10px; }
+        .info-btn { background: #222; color: var(--gold); border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .card-title { font-weight: 700; font-size: 16px; color: #eee; }
         .card-price { color: var(--gold); font-weight: 900; font-size: 14px; margin-top: 5px; }
         .buy-btn { background: var(--gold); border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; cursor: pointer; font-size: 13px; }
         .buy-btn:disabled { background: #333; color: #666; }
 
-        /* Спец-карточка Турбо в магазине */
         .turbo-card { background: linear-gradient(135deg, #441100 0%, #111 100%); border: 1px solid #ff4500; }
         .turbo-card .buy-btn { background: #ff4500; color: #fff; }
 
-        /* Ежедневные награды */
+        /* Кастомное уведомление */
+        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #222; border: 1px solid var(--gold); color: #fff; padding: 15px 25px; border-radius: 15px; z-index: 2000; transition: 0.5s; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: none; }
+        #custom-alert.show { transform: translateX(-50%) translateY(0); }
+
+        /* Модальное окно описания */
+        #desc-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .modal-content { background: #1a1a1a; width: 80%; padding: 30px; border-radius: 25px; border: 1px solid #333; text-align: center; }
+        .modal-content h3 { color: var(--gold); margin-top: 0; }
+        .modal-content p { color: #ccc; line-height: 1.6; }
+
         .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 90%; margin-top: 20px; }
         .daily-day { background: #111; border: 1px solid #222; padding: 10px; border-radius: 12px; font-size: 11px; text-align: center; color: #666; }
         .daily-day.current { border-color: var(--gold); background: rgba(243, 186, 47, 0.1); color: #fff; }
@@ -77,6 +82,16 @@
 </head>
 <body>
 
+    <div id="custom-alert">Сообщение</div>
+
+    <div id="desc-modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 id="modal-title">Описание</h3>
+            <p id="modal-text">Текст описания...</p>
+            <button class="buy-btn" style="width:100%; margin-top:20px;" onclick="closeModal()">ПОНЯТНО</button>
+        </div>
+    </div>
+
     <!-- ЭКРАН ИГРЫ -->
     <div id="game" class="page active">
         <div class="header">
@@ -84,12 +99,10 @@
             <div id="balance">0</div>
             <div style="color: #666; font-size: 13px; font-weight: 700; margin-top: 5px;">Прибыль: +<span id="p-income">0</span> / сек</div>
         </div>
-
         <div class="coin-section">
             <div class="turbo-timer" id="t-timer">15с</div>
             <div class="coin" id="coin-btn"></div>
         </div>
-
         <div style="width: 85%; margin-top: auto; margin-bottom: 30px;">
             <div style="height: 10px; background: #222; border-radius: 10px; overflow: hidden; border: 1px solid #333;">
                 <div id="energy-fill" style="width: 100%; height: 100%; background: var(--gold); transition: 0.2s;"></div>
@@ -104,19 +117,17 @@
     <!-- ЭКРАН МАГАЗИНА -->
     <div id="shop" class="page">
         <h2 style="margin-top:40px;">Улучшения</h2>
-        
         <div class="card-list">
-            <!-- БУСТЕР ТУРБО -->
             <div class="card turbo-card">
                 <div class="card-info">
-                    <div class="card-title">🔥 ТУРБО-РЕЖИМ</div>
-                    <div class="card-subtitle" style="font-size:12px; color:#aaa;">Тап x5 и бесконечная энергия</div>
-                    <div class="card-price" id="turbo-left">Доступно: 3 / 3</div>
+                    <button class="info-btn" onclick="showInfo('turbo')">?</button>
+                    <div>
+                        <div class="card-title">🔥 ТУРБО-РЕЖИМ</div>
+                        <div class="card-price" id="turbo-left">Доступно: 3 / 3</div>
+                    </div>
                 </div>
-                <button class="buy-btn" id="start-turbo-btn" onclick="activateTurbo()">ИСПОЛЬЗОВАТЬ</button>
+                <button class="buy-btn" id="start-turbo-btn" onclick="activateTurbo()">ПУСК</button>
             </div>
-
-            <!-- ПРЕДМЕТЫ МАГАЗИНА -->
             <div id="shop-items-container"></div>
         </div>
     </div>
@@ -125,34 +136,32 @@
     <div id="tasks" class="page">
         <h2 style="margin-top:40px;">Задания</h2>
         <div class="daily-grid" id="daily-rewards"></div>
-        <button class="buy-btn" style="width: 90%; margin-top: 20px; padding: 15px;" onclick="claimDaily()">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
-        
+        <button class="buy-btn" style="width: 90%; margin-top: 20px; padding: 15px;" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
         <div class="card-list" style="margin-top:30px;">
             <div class="card">
                 <div class="card-info">
                     <div class="card-title">Подписка на канал</div>
-                    <div class="card-price">+10,000 монета</div>
+                    <div class="card-price">+10,000</div>
                 </div>
-                <button class="buy-btn" onclick="this.disabled=true; addCoins(10000)">ПРОВЕРИТЬ</button>
+                <button class="buy-btn" onclick="completeTask(this, 10000)">ПРОВЕРИТЬ</button>
             </div>
         </div>
     </div>
 
     <!-- ЭКРАН ДРУЗЕЙ -->
     <div id="friends" class="page">
-        <h2 style="margin-top:40px;">Твоя сеть</h2>
+        <h2 style="margin-top:40px;">Рефералы</h2>
         <div style="background:#111; padding:30px; border-radius:24px; width:80%; border:1px solid #222; text-align:center;">
             <h3>Зови друзей!</h3>
-            <p style="color:#666; font-size:14px; line-height: 1.5;">Получай 15,000 за каждого активного майнера в твоей команде.</p>
-            <button class="buy-btn" style="width:100%; padding:15px; margin-top:10px;" onclick="copyLink()">КОПИРОВАТЬ ССЫЛКУ</button>
+            <p style="color:#666; font-size:14px;">+15,000 за каждого майнера</p>
+            <button class="buy-btn" style="width:100%; padding:15px; margin-top:10px;" onclick="copyLink()">ССЫЛКА</button>
         </div>
     </div>
 
-    <!-- МЕНЮ -->
     <div class="nav">
         <div class="nav-item active" onclick="showPage('game')"><span>🎮</span>Игра</div>
         <div class="nav-item" onclick="showPage('shop')"><span>🏦</span>Магазин</div>
-        <div class="nav-item" onclick="showPage('tasks')"><span>📅</span>Заработок</div>
+        <div class="nav-item" onclick="showPage('tasks')"><span>📅</span>Задания</div>
         <div class="nav-item" onclick="showPage('friends')"><span>👥</span>Друзья</div>
     </div>
 
@@ -180,11 +189,32 @@
         ];
 
         const SHOP_ITEMS = [
-            { id: 'tap', name: 'Мульти-Тап', basePrice: 500, ratio: 2.8 },
-            { id: 'srv', name: 'Нео-Сервер', basePrice: 5000, income: 1, ratio: 1.9 },
-            { id: 'node', name: 'Квантовый Узел', basePrice: 100000, income: 15, ratio: 2.1 },
-            { id: 'ai', name: 'Нейроядро ИИ', basePrice: 1500000, income: 200, ratio: 2.4 }
+            { id: 'tap', name: 'Нейрочип "Клик"', basePrice: 500, ratio: 2.8, desc: 'Увеличивает количество монет, получаемых за каждое нажатие.' },
+            { id: 'srv', name: 'Облачная ферма', basePrice: 5000, income: 1, ratio: 1.9, desc: 'Позволяет добывать монеты автоматически каждую секунду.' },
+            { id: 'node', name: 'Квантовый узел', basePrice: 100000, income: 15, ratio: 2.1, desc: 'Мощная система для ускоренной пассивной добычи.' },
+            { id: 'ai', name: 'Ядро сингулярности', basePrice: 1500000, income: 200, ratio: 2.4, desc: 'Вершина технологий. Максимальный пассивный доход.' }
         ];
+
+        function showAlert(text) {
+            let el = document.getElementById('custom-alert');
+            el.innerText = text;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 2500);
+        }
+
+        function showInfo(id) {
+            let item;
+            if(id === 'turbo') {
+                item = { name: 'Турбо-режим', desc: 'На 15 секунд увеличивает силу тапа в 5 раз и дает бесконечную энергию. Доступно 3 раза в сутки.' };
+            } else {
+                item = SHOP_ITEMS.find(i => i.id === id);
+            }
+            document.getElementById('modal-title').innerText = item.name;
+            document.getElementById('modal-text').innerText = item.desc;
+            document.getElementById('desc-modal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('desc-modal').style.display = 'none'; }
 
         function updateUI() {
             document.getElementById('balance').innerText = Math.floor(state.coins).toLocaleString();
@@ -193,7 +223,6 @@
             document.getElementById('p-income').innerText = state.mineLvl;
             document.getElementById('multitap-info').innerText = 'Тап x' + (state.isTurbo ? state.tapLvl * 5 : state.tapLvl);
             document.getElementById('turbo-left').innerText = `Доступно: ${state.turbo} / 3`;
-            
             if (state.turbo <= 0) document.getElementById('start-turbo-btn').disabled = true;
 
             let league = [...LEAGUES].reverse().find(l => state.coins >= l.min);
@@ -208,12 +237,15 @@
         function renderShop() {
             let html = '';
             SHOP_ITEMS.forEach(item => {
-                let lvl = item.id === 'tap' ? state.tapLvl - 1 : (item.id === 'srv' ? state.mineLvl : 0); // Упрощенный расчет
+                let lvl = item.id === 'tap' ? state.tapLvl - 1 : (item.id === 'srv' ? state.mineLvl : 0);
                 let price = Math.floor(item.basePrice * Math.pow(item.ratio, lvl));
                 html += `<div class="card">
                     <div class="card-info">
-                        <div class="card-title">${item.name}</div>
-                        <div class="card-price">💰 ${price.toLocaleString()}</div>
+                        <button class="info-btn" onclick="showInfo('${item.id}')">?</button>
+                        <div>
+                            <div class="card-title">${item.name}</div>
+                            <div class="card-price">💰 ${price.toLocaleString()}</div>
+                        </div>
                     </div>
                     <button class="buy-btn" onclick="buy('${item.id}', ${price})">КУПИТЬ</button>
                 </div>`;
@@ -235,11 +267,9 @@
             if (state.energy >= state.tapLvl || state.isTurbo) {
                 state.coins += power;
                 if (!state.isTurbo) state.energy -= state.tapLvl;
-
                 const x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
                 const y = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
                 showTapAnim(x, y, '+' + power);
-                
                 tg.HapticFeedback.impactOccurred('medium');
                 save(); updateUI();
             }
@@ -249,13 +279,10 @@
             if (state.turbo > 0 && !state.isTurbo) {
                 state.turbo--;
                 state.isTurbo = true;
-                
-                showPage('game'); // Перекидываем на игру
+                showPage('game');
                 document.body.classList.add('turbo-mode');
-                
                 let timeLeft = 15;
                 document.getElementById('t-timer').innerText = timeLeft + 'с';
-                
                 let interval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('t-timer').innerText = timeLeft + 'с';
@@ -263,14 +290,10 @@
                         clearInterval(interval);
                         state.isTurbo = false;
                         document.body.classList.remove('turbo-mode');
-                        save();
-                        showPage('shop'); // Кидаем обратно в магазин
-                        updateUI();
+                        save(); showPage('shop'); updateUI();
                     }
                 }, 1000);
-                
-                save();
-                updateUI();
+                save(); updateUI();
             }
         }
 
@@ -282,12 +305,17 @@
                 if (id === 'node') state.mineLvl += 15;
                 if (id === 'ai') state.mineLvl += 200;
                 save(); updateUI();
+            } else {
+                showAlert('Недостаточно монет!');
             }
         }
 
-        function addCoins(num) {
-            state.coins += num; save(); updateUI();
-            alert('Монеты начислены!');
+        function completeTask(btn, reward) {
+            state.coins += reward;
+            btn.disabled = true;
+            btn.innerText = "ГОТОВО";
+            save(); updateUI();
+            showAlert('Награда получена!');
         }
 
         function claimDaily() {
@@ -297,9 +325,9 @@
                 state.coins += state.streak * 1000;
                 state.lastDaily = today;
                 save(); updateUI();
-                alert('Награда за вход получена!');
+                showAlert('Бонус за вход получен!');
             } else {
-                alert('Приходи завтра за новой наградой!');
+                showAlert('Приходи завтра!');
             }
         }
 
@@ -317,8 +345,6 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(pId).classList.add('active');
-            
-            // Находим нужный айтем меню по тексту (для автоматического переключения)
             let items = document.querySelectorAll('.nav-item');
             if (pId === 'game') items[0].classList.add('active');
             if (pId === 'shop') items[1].classList.add('active');
@@ -339,9 +365,6 @@
         const cBtn = document.getElementById('coin-btn');
         cBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); });
         cBtn.addEventListener('mousedown', handleTap);
-        window.addEventListener('mouseup', () => cBtn.style.transform = 'scale(1)');
-        window.addEventListener('touchend', () => cBtn.style.transform = 'scale(1)');
-
         setInterval(() => {
             state.coins += state.mineLvl / 10;
             if (state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.6);
