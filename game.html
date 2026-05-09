@@ -3,224 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeoTapCoin Premium</title>
+    <title>NeoTapCoin Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --main-gold: #f3ba2f;
             --dark-bg: #050505;
+            --card-bg: #111111;
         }
 
         body {
             background-color: var(--dark-bg);
             color: #fff;
             font-family: 'Inter', sans-serif;
-            text-align: center;
             margin: 0;
             overflow: hidden;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            height: 100vh;
             user-select: none;
-            touch-action: manipulation;
             background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
         }
 
-        #balance-container {
-            margin-top: 60px;
-            font-size: 56px;
-            font-weight: 900;
-            color: var(--main-gold);
-            text-shadow: 0 0 30px rgba(243, 186, 47, 0.3);
-            letter-spacing: -1px;
-        }
+        /* Страницы */
+        .page { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; }
+        .active { display: flex; }
 
-        .coin-wrapper {
-            position: relative;
-            margin-top: 40px;
-            perspective: 1000px;
-        }
+        /* Шапка */
+        .header { margin-top: 40px; text-align: center; }
+        #balance { font-size: 52px; font-weight: 900; color: var(--main-gold); text-shadow: 0 0 20px rgba(243, 186, 47, 0.4); }
+        .income-info { font-size: 14px; color: #888; margin-top: 5px; }
 
-        .coin-container {
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            -webkit-tap-highlight-color: transparent;
-            z-index: 2;
-            display: inline-block;
-        }
+        /* Игровая зона */
+        .coin-wrapper { position: relative; margin-top: 30px; perspective: 1000px; }
+        .coin-container { cursor: pointer; transition: transform 0.1s; z-index: 2; position: relative; }
+        .coin { width: 280px; height: 280px; background: url('coin.png') no-repeat center; background-size: contain; pointer-events: none; }
+        .coin-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; background: var(--main-gold); filter: blur(70px); opacity: 0.1; pointer-events: none; }
 
-        .coin {
-            width: 280px;
-            height: 280px;
-            background: url('coin.png') no-repeat center;
-            background-size: contain;
-            border-radius: 50%; 
-            filter: drop-shadow(0 0 50px rgba(243, 186, 47, 0.2));
-            pointer-events: none; /* Чтобы не мешала кликам */
-        }
+        /* Статистика внизу */
+        .stats-container { margin-top: auto; margin-bottom: 100px; width: 85%; }
+        .energy-bar { width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #f3ba2f, #ff8c00); box-shadow: 0 0 10px var(--main-gold); transition: width 0.3s; }
 
-        .coin-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 250px;
-            height: 250px;
-            background: var(--main-gold);
-            filter: blur(80px);
-            opacity: 0.15;
-            z-index: 1;
-            pointer-events: none;
-        }
+        /* Магазин */
+        .shop-list { width: 90%; margin-top: 20px; overflow-y: auto; padding-bottom: 120px; }
+        .upgrade-card { background: var(--card-bg); border: 1px solid #222; border-radius: 16px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .upgrade-card:active { background: #1a1a1a; transform: scale(0.98); }
+        .upgrade-info { text-align: left; }
+        .upgrade-name { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+        .upgrade-desc { font-size: 12px; color: #666; }
+        .upgrade-price { font-weight: 900; color: var(--main-gold); margin-top: 5px; }
+        .btn-buy { background: var(--main-gold); color: #000; border: none; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 14px; }
 
-        .stats {
-            margin-top: auto;
-            margin-bottom: 50px;
-            width: 85%;
-        }
+        /* Навигация */
+        .nav-bar { position: fixed; bottom: 20px; width: 90%; background: rgba(20,20,20,0.9); backdrop-filter: blur(10px); border-radius: 20px; display: flex; justify-content: space-around; padding: 15px 0; border: 1px solid #333; z-index: 100; }
+        .nav-item { color: #666; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .nav-item.active { color: var(--main-gold); }
 
-        .energy-bar {
-            width: 100%;
-            height: 14px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .energy-fill {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, #f3ba2f, #ffdc2a);
-            box-shadow: 0 0 15px var(--main-gold);
-            transition: width 0.3s ease-out;
-        }
-
-        .energy-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            color: #888;
-        }
-
-        .tap-number {
-            position: absolute;
-            color: #fff;
-            font-size: 38px;
-            font-weight: 900;
-            pointer-events: none;
-            animation: moveUp 0.8s ease-out forwards;
-            z-index: 10;
-            text-shadow: 0 0 10px rgba(243, 186, 47, 1);
-        }
-
-        @keyframes moveUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-150px) scale(1.2); opacity: 0; }
-        }
+        .tap-number { position: absolute; color: #fff; font-size: 32px; font-weight: 900; pointer-events: none; animation: moveUp 0.8s ease-out forwards; text-shadow: 0 0 10px var(--main-gold); }
+        @keyframes moveUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-120px); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="balance-container">0</div>
-    
-    <div class="coin-wrapper">
-        <div class="coin-glow"></div>
-        <div class="coin-container" id="coin-btn">
-            <div class="coin"></div>
+    <!-- Страница Игры -->
+    <div id="game-page" class="page active">
+        <div class="header">
+            <div id="balance">0</div>
+            <div class="income-info">Прибыль в сек: +<span id="p-income">0</span></div>
+        </div>
+
+        <div class="coin-wrapper">
+            <div class="coin-glow"></div>
+            <div class="coin-container" id="coin-btn">
+                <div class="coin"></div>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="energy-bar"><div id="energy" class="energy-fill"></div></div>
+            <div style="display:flex; justify-content: space-between; margin-top:10px; font-weight:700; color:#888;">
+                <span>⚡️ <span id="e-val">1000</span>/1000</span>
+                <span>NeoTap</span>
+            </div>
         </div>
     </div>
 
-    <div class="stats">
-        <div class="energy-bar">
-            <div id="energy" class="energy-fill"></div>
+    <!-- Страница Магазина -->
+    <div id="shop-page" class="page">
+        <h2 style="margin-top:40px;">Улучшения</h2>
+        <div class="shop-list">
+            <div class="upgrade-card" onclick="buyUpgrade('tap')">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Multi-Tap</div>
+                    <div class="upgrade-desc">Увеличивает доход за один клик</div>
+                    <div class="upgrade-price">💰 <span id="price-tap">100</span></div>
+                </div>
+                <button class="btn-buy">Купить</button>
+            </div>
+
+            <div class="upgrade-card" onclick="buyUpgrade('mine')">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Neo-Server</div>
+                    <div class="upgrade-desc">Приносит +1 монету в секунду</div>
+                    <div class="upgrade-price">💰 <span id="price-mine">500</span></div>
+                </div>
+                <button class="btn-buy">Купить</button>
+            </div>
         </div>
-        <div class="energy-info">
-            <span>⚡️ Энергия</span>
-            <span><span id="energy-value">1000</span> / 1000</span>
-        </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="showPage('game')">ИГРА</div>
+        <div class="nav-item" onclick="showPage('shop')">МАГАЗИН</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let coins = Number(localStorage.getItem('coins')) || 0;
-        let energy = Number(localStorage.getItem('energy')) || 1000;
-        const coinBtn = document.getElementById('coin-btn');
-        const balanceEl = document.getElementById('balance-container');
+        // Состояние игры
+        let state = {
+            coins: Number(localStorage.getItem('coins')) || 0,
+            energy: Number(localStorage.getItem('energy')) || 1000,
+            tapLevel: Number(localStorage.getItem('tapLevel')) || 1,
+            mineLevel: Number(localStorage.getItem('mineLevel')) || 0
+        };
 
         function updateUI() {
-            balanceEl.innerText = coins.toLocaleString();
-            document.getElementById('energy-value').innerText = Math.floor(energy);
-            document.getElementById('energy').style.width = (energy / 10) + '%';
+            document.getElementById('balance').innerText = Math.floor(state.coins).toLocaleString();
+            document.getElementById('e-val').innerText = Math.floor(state.energy);
+            document.getElementById('energy').style.width = (state.energy / 10) + '%';
+            document.getElementById('p-income').innerText = state.mineLevel;
+            document.getElementById('price-tap').innerText = (state.tapLevel * 100);
+            document.getElementById('price-mine').innerText = ((state.mineLevel + 1) * 500);
         }
 
-        updateUI();
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(page + '-page').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
 
-        // Универсальная функция обработки нажатия
+        const coinBtn = document.getElementById('coin-btn');
         function handleTap(e) {
-            if (energy >= 1) {
-                coins += 1;
-                energy -= 1;
+            if (state.energy >= state.tapLevel) {
+                state.coins += state.tapLevel;
+                state.energy -= state.tapLevel;
                 
-                localStorage.setItem('coins', coins);
-                localStorage.setItem('energy', energy);
-
-                // Координаты для анимации (мышь или тач)
                 const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
                 const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
 
-                // 3D эффект наклона
+                createTapNumber(clientX, clientY, '+' + state.tapLevel);
+                
+                // Эффект наклона
                 const rect = coinBtn.getBoundingClientRect();
                 const x = clientX - rect.left - rect.width / 2;
                 const y = clientY - rect.top - rect.height / 2;
-                coinBtn.style.transform = `perspective(1000px) rotateX(${-y/5}deg) rotateY(${x/5}deg) scale(0.95)`;
-
-                createTapNumber(clientX, clientY);
-                updateUI();
+                coinBtn.style.transform = `perspective(1000px) rotateX(${-y/10}deg) rotateY(${x/10}deg) scale(0.96)`;
                 
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                saveData();
+                updateUI();
+                tg.HapticFeedback.impactOccurred('medium');
             }
         }
 
-        // Слушаем и мышку, и касания
-        coinBtn.addEventListener('mousedown', handleTap);
-        coinBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Защита от мультитача
-            handleTap(e);
-        });
+        function buyUpgrade(type) {
+            if (type === 'tap') {
+                let price = state.tapLevel * 100;
+                if (state.coins >= price) {
+                    state.coins -= price;
+                    state.tapLevel++;
+                }
+            } else if (type === 'mine') {
+                let price = (state.mineLevel + 1) * 500;
+                if (state.coins >= price) {
+                    state.coins -= price;
+                    state.mineLevel++;
+                }
+            }
+            saveData();
+            updateUI();
+        }
 
-        // Возвращаем монету в исходное положение
-        const resetStyles = () => {
-            coinBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-        };
-        coinBtn.addEventListener('mouseup', resetStyles);
-        coinBtn.addEventListener('mouseleave', resetStyles);
-        coinBtn.addEventListener('touchend', resetStyles);
-
-        function createTapNumber(x, y) {
+        function createTapNumber(x, y, text) {
             const num = document.createElement('div');
             num.className = 'tap-number';
-            num.innerText = '+1';
-            num.style.left = (x - 20) + 'px';
-            num.style.top = (y - 40) + 'px';
+            num.innerText = text;
+            num.style.left = x + 'px';
+            num.style.top = y + 'px';
             document.body.appendChild(num);
             setTimeout(() => num.remove(), 800);
         }
 
-        // Регенерация энергии
+        function saveData() {
+            localStorage.setItem('coins', state.coins);
+            localStorage.setItem('energy', state.energy);
+            localStorage.setItem('tapLevel', state.tapLevel);
+            localStorage.setItem('mineLevel', state.mineLevel);
+        }
+
+        coinBtn.addEventListener('mousedown', handleTap);
+        coinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); });
+        window.addEventListener('mouseup', () => coinBtn.style.transform = 'scale(1)');
+        window.addEventListener('touchend', () => coinBtn.style.transform = 'scale(1)');
+
+        // Цикл пассивного дохода и регенерации
         setInterval(() => {
-            if (energy < 1000) {
-                energy = Math.min(1000, energy + 1);
-                updateUI();
-            }
-        }, 1000);
+            state.coins += state.mineLevel / 10; // Доход каждые 100мс
+            if (state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.2);
+            updateUI();
+            if (state.mineLevel > 0) saveData();
+        }, 100);
+
+        updateUI();
     </script>
 </body>
 </html>
