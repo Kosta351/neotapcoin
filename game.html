@@ -3,23 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeoTapCoin Premium Edition</title>
+    <title>NeoTapCoin Summer Ultimate Edition</title>
     
+    <!-- ПОДКЛЮЧЕНИЕ ТЕЛЕГРАМ И ШРИФТОВ -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* ПРЕМИАЛЬНЫЕ ПЕРЕМЕННЫЕ */
+        /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ЦВЕТОВ */
         :root { 
-            --main-color: #f3ba2f; 
-            --bg-dark: #050505; 
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.07);
-            --shadow: rgba(243, 186, 47, 0.2);
+            --gold: #f3ba2f; 
+            --bg: #030303; 
+            --card: rgba(30, 30, 30, 0.6); 
+            --bronze: #cd7f32; 
+            --silver: #c0c0c0; 
+            --platinum: #e5e4e2; 
+            --diamond: #b9f2ff;
         }
 
+        /* ОСНОВНОЙ СТИЛЬ ТЕЛА */
         body { 
-            background: var(--bg-dark); 
+            background: var(--bg); 
             color: #fff; 
             font-family: 'Inter', sans-serif; 
             margin: 0; 
@@ -31,278 +35,377 @@
             touch-action: manipulation;
         }
 
-        /* ЖИВОЙ ФОН */
+        /* ЖИВОЙ ФОН И ЛЕТНЯЯ ПЫЛЬЦА */
         .bg-wrap { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%); 
-        }
-
-        /* ЭФФЕКТ СЕТКИ (CYBER GRID) */
-        .grid-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(var(--glass-border) 1px, transparent 1px), linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1; opacity: 0.2;
-            mask-image: radial-gradient(circle at 50% 50%, black, transparent);
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -1; 
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #030303 100%); 
         }
 
         .pollen { 
-            position: absolute; background: var(--main-color); border-radius: 50%; opacity: 0.2; 
-            pointer-events: none; animation: driftPollen 20s linear infinite; z-index: 0;
-            filter: blur(1px);
+            position: absolute; 
+            background: var(--gold); 
+            border-radius: 50%; 
+            opacity: 0.15; 
+            pointer-events: none; 
+            animation: driftPollen 18s linear infinite; 
+            z-index: 0;
         }
         @keyframes driftPollen {
-            from { transform: translateY(110vh) translateX(-20px); opacity: 0; }
-            50% { opacity: 0.4; }
-            to { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+            from { transform: translateY(110vh) translateX(-30px); opacity: 0; }
+            50% { opacity: 0.3; }
+            to { transform: translateY(-10vh) translateX(60px); opacity: 0; }
         }
 
-        /* НАВИГАЦИЯ (PREMIUM GLASS) */
+        /* ПРЕМИАЛЬНАЯ НАВИГАЦИЯ - ТЕПЕРЬ 7 КОЛОНОК */
         .nav { 
-            position: fixed; bottom: 20px; left: 3%; width: 94%; 
-            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(30px); 
-            border-radius: 35px; display: grid; grid-template-columns: repeat(7, 1fr); 
-            padding: 18px 0; border: 1px solid var(--glass-border); z-index: 1000;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            position: fixed; 
+            bottom: 15px; 
+            left: 2%; 
+            width: 96%; 
+            background: rgba(20, 20, 20, 0.75); 
+            backdrop-filter: blur(25px); 
+            border-radius: 30px; 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            padding: 15px 0; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            z-index: 1000;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.7);
         }
         .nav-item { 
-            display: flex; flex-direction: column; align-items: center; 
-            font-size: 7px; color: #555; cursor: pointer; font-weight: 800; transition: 0.4s;
-            text-transform: uppercase; letter-spacing: 0.5px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-size: 7px; 
+            color: #555; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
         }
-        .nav-item.active { color: var(--main-color); transform: translateY(-5px); text-shadow: 0 0 15px var(--main-color); }
-        .nav-item span { font-size: 22px; margin-bottom: 6px; transition: 0.3s; }
-        .nav-item.active span { transform: scale(1.2); }
+        .nav-item.active { color: var(--gold); transform: translateY(-4px); }
+        .nav-item span { font-size: 18px; margin-bottom: 5px; }
 
-        /* СТРАНИЦЫ */
+        /* ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ */
         .page { 
-            display: none; flex-direction: column; align-items: center; 
-            width: 100%; height: 100%; overflow-y: auto; padding-bottom: 140px;
-            animation: pageSlide 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%; 
+            height: 100%; 
+            overflow-y: auto; 
+            padding-bottom: 120px;
+            animation: pageIn 0.5s ease;
         }
         .active { display: flex; }
-        @keyframes pageSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pageIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* HEADER */
-        .header { margin-top: 40px; text-align: center; width: 100%; z-index: 10; }
-        #league-name { 
-            font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 900; 
-            letter-spacing: 5px; margin-bottom: 12px; color: var(--main-color);
-            text-shadow: 0 0 15px var(--shadow);
-        }
+        /* ВЕРХНЯЯ ПАНЕЛЬ И ЛИГИ */
+        .header { margin-top: 35px; text-align: center; width: 100%; }
+        #league-name { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         
         .league-progress-bg { 
-            width: 50%; height: 4px; background: rgba(255,255,255,0.05); 
-            border-radius: 10px; margin: 0 auto 20px; overflow: hidden; 
-            border: 1px solid var(--glass-border);
+            width: 48%; height: 6px; background: rgba(255,255,255,0.03); 
+            border-radius: 10px; margin: 0 auto 15px; border: 1px solid rgba(255,255,255,0.05); 
+            overflow: hidden; 
         }
         .league-progress-fill { 
-            width: 0%; height: 100%; background: var(--main-color); 
-            box-shadow: 0 0 20px var(--main-color); transition: 1.2s; 
+            width: 0%; height: 100%; background: var(--gold); 
+            box-shadow: 0 0 20px var(--gold); transition: 1s cubic-bezier(0.34, 1.56, 0.64, 1); 
         }
 
-        #balance { 
-            font-family: 'Orbitron', sans-serif; font-size: 58px; font-weight: 900; 
-            color: #fff; text-shadow: 0 0 40px var(--shadow); letter-spacing: -2px;
+        .balance-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        #balance { font-size: 56px; font-weight: 900; color: var(--gold); text-shadow: 0 0 40px rgba(243, 186, 47, 0.4); letter-spacing: -2px; }
+        
+        #sync-dot { 
+            width: 8px; height: 8px; background: #00ff00; border-radius: 50%; 
+            box-shadow: 0 0 15px #00ff00; opacity: 0.2; transition: 0.3s; 
         }
+        .syncing #sync-dot { opacity: 1; transform: scale(1.4); }
 
-        /* МОНЕТА И СОЛНЦЕ (УЛУЧШЕНО) */
-        .coin-section { position: relative; margin-top: 35px; perspective: 1500px; z-index: 10; }
+        /* МОНЕТА И СОЛНЕЧНЫЕ ЭФФЕКТЫ */
+        .coin-section { position: relative; margin-top: 25px; perspective: 1200px; z-index: 10; }
         
         .sun-beams {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 580px; height: 580px;
-            background: conic-gradient(from 0deg, transparent, var(--shadow), transparent 20%, transparent 40%, var(--shadow), transparent 60%);
-            animation: rotateBeams 80s linear infinite; pointer-events: none; opacity: 0.6;
+            width: 550px; height: 550px;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.05), transparent 15%, transparent 30%, rgba(255, 215, 0, 0.05), transparent 45%);
+            animation: rotateBeams 60s linear infinite; pointer-events: none; z-index: 1;
         }
         @keyframes rotateBeams { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
+        .sun-glare {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 380px; height: 380px;
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.12) 0%, transparent 70%);
+            filter: blur(30px); border-radius: 50%; pointer-events: none; z-index: 2;
+        }
+
         .coin-aura { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 350px; height: 350px; border-radius: 50%; opacity: 0.1; 
-            background: var(--main-color); filter: blur(60px); pointer-events: none;
+            width: 330px; height: 330px; border-radius: 50%; opacity: 0.15; transition: 0.5s; pointer-events: none; z-index: 3;
         }
-        
         .coin { 
-            width: 290px; height: 290px; background: url('coin.png') no-repeat center; 
+            width: 280px; height: 280px; background: url('coin.png') no-repeat center; 
             background-size: contain; transition: transform 0.1s cubic-bezier(0.1, 0.8, 0.1, 1); 
             cursor: pointer; z-index: 100; position: relative;
-            filter: drop-shadow(0 0 30px rgba(0,0,0,0.5));
         }
         
-        /* КАРТОЧКИ (PREMIUM GLASS) */
-        .card { 
-            background: var(--glass); backdrop-filter: blur(25px); border-radius: 30px; 
-            padding: 24px; margin-bottom: 16px; display: flex; justify-content: space-between; 
-            align-items: center; border: 1px solid var(--glass-border); width: 90%;
-            transition: 0.3s; overflow: hidden; position: relative;
+        /* ТУРБО ЭФФЕКТЫ */
+        .turbo-mode .coin { filter: drop-shadow(0 0 60px #ff4500); animation: turbo-shake 0.1s infinite; }
+        @keyframes turbo-shake { 0% { transform: scale(1.03) rotate(1deg); } 50% { transform: scale(1.05) rotate(-1deg); } 100% { transform: scale(1.03) rotate(1deg); } }
+        .turbo-timer { 
+            position: absolute; top: -45px; left: 50%; transform: translateX(-50%); 
+            color: #ff4500; font-weight: 900; font-size: 28px; display: none; 
+            text-shadow: 0 0 20px #000; z-index: 200;
         }
-        /* Блик на карточке */
-        .card::after {
-            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
-            transform: rotate(45deg); animation: cardShine 4s infinite;
-        }
-        @keyframes cardShine { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+        .turbo-mode .turbo-timer { display: block; }
 
-        .card:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
+        /* КАРТОЧКИ И СПИСКИ (МАРКЕТ) */
+        .card-list { width: 92%; margin-top: 15px; }
+        .card { 
+            background: var(--card); backdrop-filter: blur(20px); border-radius: 26px; 
+            padding: 22px; margin-bottom: 14px; display: flex; justify-content: space-between; 
+            align-items: center; border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s ease;
+        }
+        .card:active { transform: scale(0.97); background: rgba(50, 50, 50, 0.7); }
+        .card-info { text-align: left; display: flex; align-items: center; gap: 15px; }
+        
+        .lvl-badge { 
+            font-size: 10px; background: rgba(243, 186, 47, 0.15); color: var(--gold); 
+            padding: 4px 12px; border-radius: 10px; font-weight: 800; margin-bottom: 6px; display: inline-block; 
+        }
+        
+        .info-btn { 
+            background: rgba(255,255,255,0.07); color: var(--gold); border: 1px solid rgba(255,255,255,0.1); 
+            width: 30px; height: 30px; border-radius: 50%; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; position: relative; z-index: 500;
+        }
         
         .buy-btn { 
-            background: var(--main-color); border: none; border-radius: 18px; padding: 14px 24px; 
-            font-weight: 900; cursor: pointer; color: #000; font-size: 14px;
-            box-shadow: 0 8px 25px var(--shadow); transition: 0.3s;
-            text-transform: uppercase;
+            background: var(--gold); border: none; border-radius: 16px; padding: 14px 26px; 
+            font-weight: 800; cursor: pointer; font-size: 14px; color: #000;
+            box-shadow: 0 6px 25px rgba(243, 186, 47, 0.3); transition: 0.2s;
         }
-        .buy-btn:active { transform: translateY(3px); box-shadow: none; }
+        .buy-btn:active { transform: translateY(2px); box-shadow: none; }
+        .buy-btn:disabled { background: #222; color: #555; box-shadow: none; cursor: default; }
 
-        /* СКВАДЫ И ТОП */
+        /* СПИСКИ (ТОП И ДРУЗЬЯ) */
         .list-item { 
-            background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 12px; 
-            display: flex; align-items: center; justify-content: space-between; 
-            border: 1px solid var(--glass-border); width: 90%;
+            background: var(--card); border-radius: 22px; padding: 18px; margin-bottom: 12px; 
+            display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.04); 
         }
-        .list-rank { font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--main-color); width: 45px; font-size: 22px; }
+        .list-rank { font-weight: 900; color: var(--gold); width: 40px; font-size: 20px; }
+        .list-name { flex-grow: 1; font-weight: 700; font-size: 16px; }
+        .list-score { font-weight: 900; color: var(--gold); font-size: 17px; }
 
-        /* КРИПТО КАРТОЧКИ */
-        .crypto-card { 
-            background: linear-gradient(145deg, rgba(20,20,20,0.8), rgba(0,0,0,0.9)); 
-            border: 1px solid var(--glass-border); padding: 35px; border-radius: 40px; 
-            width: 86%; text-align: center; margin-bottom: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        /* ЕЖЕДНЕВНЫЕ НАГРАДЫ */
+        .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 92%; margin-top: 15px; }
+        .daily-day { 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); 
+            padding: 16px; border-radius: 18px; font-size: 12px; text-align: center; color: #666;
         }
+        .daily-day.current { border-color: var(--gold); color: #fff; background: rgba(243, 186, 47, 0.18); box-shadow: 0 0 20px rgba(243, 186, 47, 0.15); }
 
+        /* МОДАЛКИ И УВЕДОМЛЕНИЯ */
         #custom-alert { 
-            position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-200px); 
-            background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(20px); 
-            border: 1px solid var(--main-color); padding: 20px 45px; border-radius: 25px; 
-            z-index: 8000; transition: 0.7s cubic-bezier(0.17, 0.89, 0.32, 1.49); 
-            font-weight: 900; box-shadow: 0 30px 70px rgba(0,0,0,1); text-align: center;
+            position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-180px); 
+            background: rgba(25, 25, 25, 0.98); backdrop-filter: blur(20px); border: 1px solid var(--gold); 
+            padding: 18px 40px; border-radius: 24px; z-index: 8000; transition: 0.6s cubic-bezier(0.17, 0.89, 0.32, 1.49); 
+            font-weight: 800; box-shadow: 0 25px 60px rgba(0,0,0,0.9); text-align: center; pointer-events: none;
         }
         #custom-alert.show { transform: translateX(-50%) translateY(0); }
 
-        .tap-anim { 
-            position: absolute; color: #fff; font-weight: 900; font-size: 48px; 
-            pointer-events: none; animation: floatSpark 1s forwards; 
-            z-index: 200; text-shadow: 0 0 30px var(--main-color); font-family: 'Orbitron', sans-serif;
+        #league-up-modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.97); 
+            z-index: 9000; display: none; align-items: center; justify-content: center; flex-direction: column; 
+            text-align: center; animation: modalFade 0.7s; 
         }
-        @keyframes floatSpark { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-200px) scale(1.5); } }
+        @keyframes modalFade { from {opacity: 0;} to {opacity: 1;} }
+
+        /* ЭФФЕКТЫ ТАПА */
+        .tap-anim { 
+            position: absolute; color: #fff; font-weight: 900; font-size: 44px; 
+            pointer-events: none; animation: floatSpark 0.9s cubic-bezier(0.2, 1, 0.2, 1) forwards; 
+            z-index: 200; text-shadow: 0 0 25px var(--gold);
+        }
+        @keyframes floatSpark { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-180px) scale(1.6); } }
+        
+        .particle { position: absolute; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 150; animation: partOut 0.7s ease-out forwards; }
+        @keyframes partOut { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
+
+        /* КРИПТО КАРТОЧКИ */
+        .crypto-card { 
+            background: linear-gradient(145deg, #1a1a1a, #000); border: 1px solid #333; 
+            padding: 30px; border-radius: 35px; width: 88%; text-align: center; margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .pred-btn { padding: 22px; border-radius: 20px; border: none; font-weight: 900; width: 46%; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .pred-btn:active { transform: scale(0.95); }
+
+        #e-fill { transition: width 0.2s linear; }
     </style>
 </head>
 <body>
 
     <div class="bg-wrap"></div>
-    <div class="grid-overlay"></div>
-    <div id="custom-alert">NeoTap System Online</div>
+    <div id="custom-alert">NeoTap System</div>
 
-    <!-- СТРАНИЦЫ (ВСЁ СОХРАНЕНО) -->
+    <!-- МОДАЛКИ (СОХРАНЕНЫ ПОЛНОСТЬЮ) -->
+    <div id="league-up-modal">
+        <div style="font-size: 52px; font-weight: 900; color: var(--gold); text-shadow: 0 0 45px var(--gold); margin-bottom: 10px;">НОВЫЙ РАНГ!</div>
+        <div id="new-l-name" style="font-size: 28px; font-weight: 700; text-transform: uppercase; color: #fff; letter-spacing: 8px;">ЗОЛОТО</div>
+        <div style="font-size:130px; margin: 40px 0; filter: drop-shadow(0 0 30px gold);">🏆</div>
+        <button class="buy-btn" style="padding: 25px 80px; font-size: 20px;" onclick="document.getElementById('league-up-modal').style.display='none'">К ПОБЕДАМ!</button>
+    </div>
+
+    <div id="desc-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:5000; display:none; align-items:center; justify-content:center;" onclick="this.style.display='none'">
+        <div class="modal-content" style="background:#111; width:82%; padding:40px; border-radius:35px; border:1px solid #222; text-align:center;" onclick="event.stopPropagation()">
+            <h3 id="m-title" style="color:var(--gold); margin-top:0; font-size:26px;"></h3>
+            <p id="m-text" style="color:#999; line-height:1.8; font-size:17px; margin: 25px 0;"></p>
+            <button class="buy-btn" style="width:100%;" onclick="document.getElementById('desc-modal').style.display='none'">ПОНЯТНО</button>
+        </div>
+    </div>
+
+    <!-- СТРАНИЦЫ -->
     <div id="game" class="page active">
         <div class="header">
-            <div id="league-name">БРОНЗОВАЯ ЛИГА</div>
+            <div id="league-name">Бронзовая лига</div>
             <div class="league-progress-bg"><div id="l-progress" class="league-progress-fill"></div></div>
-            <div class="balance-wrap"><div id="balance">0</div><div id="sync-dot" style="width:8px; height:8px; background:#00ff00; border-radius:50%; opacity:0.3; transition:0.3s;"></div></div>
-            <div style="color: #555; font-size: 14px; font-weight: 900; margin-top:10px; text-transform: uppercase; letter-spacing: 2px;">
-                Profit: <span id="p-inc" style="color:#aaa;">0</span> / sec
-            </div>
+            <div class="balance-wrap"><div id="balance">0</div><div id="sync-dot"></div></div>
+            <div style="color: #666; font-size: 16px; font-weight: 800; margin-top:8px;">💸 ПРИБЫЛЬ: +<span id="p-inc">0</span> / СЕК</div>
         </div>
 
         <div class="coin-section">
             <div class="sun-beams"></div>
-            <div id="t-timer" class="turbo-timer" style="position:absolute; top:-50px; left:50%; transform:translateX(-50%); color:#ff4500; font-size:30px; font-weight:900; display:none; text-shadow:0 0 20px #ff4500;">15s</div>
+            <div class="sun-glare"></div>
+            <div id="t-timer" class="turbo-timer">15с</div>
             <div class="coin-aura" id="aura"></div>
             <div class="coin" id="coin-btn"></div>
         </div>
 
-        <div style="width: 82%; margin-top: auto; margin-bottom: 50px;">
-            <div style="height: 12px; background: rgba(255,255,255,0.03); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border);">
-                <div id="e-fill" style="width: 100%; height: 100%; background: var(--main-color); box-shadow: 0 0 15px var(--main-color);"></div>
-            </div>
-            <div style="display:flex; justify-content: space-between; margin-top:15px; font-size:13px; font-weight:900; color:#444;">
-                <span>⚡️ <span id="e-val" style="color:#777;">1000</span> / 1000</span>
-                <span id="tap-info" style="color:var(--main-color)">x1 MULTIPLIER</span>
+        <div style="width: 85%; margin-top: auto; margin-bottom: 40px;">
+            <div style="height: 14px; background: rgba(255,255,255,0.04); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);"><div id="e-fill" style="width: 100%; height: 100%; background: var(--gold);"></div></div>
+            <div style="display:flex; justify-content: space-between; margin-top:14px; font-size:14px; font-weight:900; color:#555;">
+                <span>⚡️ <span id="e-val" style="color:#888;">1000</span> / 1000</span>
+                <span id="tap-info" style="color:var(--gold)">x1 МОЩНОСТЬ</span>
             </div>
         </div>
     </div>
 
-    <!-- КРИПТО (СОХРАНЕНО) -->
+    <!-- КРИПТО И ПРОГНОЗ -->
     <div id="crypto" class="page">
-        <h2 style="margin-top:45px; font-family:'Orbitron'; letter-spacing:3px;">💎 CRYPTO NODE</h2>
+        <h2 style="margin-top:45px; letter-spacing:1px;">💎 Crypto Center</h2>
+        
         <div class="crypto-card">
-            <div style="font-size:11px; color:#555; margin-bottom:15px; letter-spacing:3px;">TON BLOCKCHAIN</div>
-            <div id="wallet-addr" style="font-size:16px; margin-bottom:25px; color:var(--main-color); font-weight:800; font-family:monospace;">NOT CONNECTED</div>
-            <button class="buy-btn" id="conn-btn" style="width:100%;" onclick="connectWallet()">CONNECT WALLET</button>
+            <div style="font-size:12px; color:#666; margin-bottom:12px; font-weight:800; letter-spacing:2px;">TON NETWORK</div>
+            <div id="wallet-addr" style="font-size:16px; margin-bottom:20px; color:var(--gold); font-weight:700;">Не подключен</div>
+            <button class="buy-btn" id="conn-btn" style="width:100%;" onclick="connectWallet()">ПРИВЯЗАТЬ КОШЕЛЕК</button>
         </div>
+
         <div class="crypto-card">
-            <div style="font-size:14px; margin-bottom:10px; font-weight:800; letter-spacing:2px;">TON MARKET PRICE</div>
-            <div id="ton-price" style="font-size:42px; font-weight:900; font-family:'Orbitron';">$6.54</div>
-            <div style="display:flex; justify-content: space-between; margin-top:30px;">
-                <button class="pred-btn" style="background:#00ff00; color:#000; padding:20px; border-radius:20px; border:none; width:46%; font-weight:900;" onclick="placeBet('up')">UP</button>
-                <button class="pred-btn" style="background:#ff4500; color:#fff; padding:20px; border-radius:20px; border:none; width:46%; font-weight:900;" onclick="placeBet('down')">DOWN</button>
+            <div style="font-size:16px; margin-bottom:8px; font-weight:800;">КУРС TON/USD</div>
+            <div id="ton-price" style="font-size:38px; font-weight:900; color:#fff; text-shadow:0 0 20px rgba(255,255,255,0.2);">$6.54</div>
+            <div style="font-size:12px; color:#555; margin-top:15px; font-weight:700;">СТАВКА НА 5 СЕКУНД</div>
+            
+            <div style="display:flex; justify-content: space-between; margin-top:25px;">
+                <button class="pred-btn" style="background:#00ff00; color:#000;" onclick="placeBet('up')">ВВЕРХ</button>
+                <button class="pred-btn" style="background:#ff4500; color:#fff;" onclick="placeBet('down')">ВНИЗ</button>
             </div>
+            <div style="margin-top:20px; font-size:13px; color:#666; font-weight:800;">Цена участия: 10,000 монет</div>
         </div>
     </div>
 
-    <div id="top" class="page"><h2 style="margin-top:45px; font-family:'Orbitron';">🏆 GLOBAL TOP</h2><div id="top-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
+    <div id="top" class="page"><h2 style="margin-top:45px;">🏆 Глобальный Рейтинг</h2><div id="top-list" class="card-list"></div></div>
 
     <div id="squads" class="page">
-        <h2 style="margin-top:45px; font-family:'Orbitron';">🛡️ SQUAD ALLIANCE</h2>
-        <div style="width:90%; display:flex; gap:12px; margin-bottom:25px;">
-            <input type="text" id="sq-input" placeholder="Squad Name..." style="flex:1; padding:20px; border-radius:22px; background:rgba(0,0,0,0.5); border:1px solid #333; color:#fff; font-weight:800;">
-            <button class="buy-btn" onclick="joinSquad()">JOIN</button>
+        <h2 style="margin-top:45px;">🛡️ Сквады Альянса</h2>
+        <div style="width:92%; margin-bottom:20px; display:flex; gap:10px;">
+            <input type="text" id="sq-input" placeholder="Имя сквада..." style="flex:1; padding:18px; border-radius:20px; background:#111; border:1px solid #333; color:#fff; font-weight:700;">
+            <button class="buy-btn" onclick="joinSquad()">ВСТУПИТЬ</button>
         </div>
-        <div id="squad-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
-        <div id="my-sq-box" style="width:92%; display:none; margin-top:30px;">
-            <h3 style="color:var(--main-color); font-size:13px; letter-spacing:2px; text-align:center;">👥 SQUAD MEMBERS</h3>
-            <div id="squad-members" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
+        <div id="squad-list" class="card-list"></div>
+        <div id="my-sq-box" style="width:92%; display:none; margin-top:20px;">
+            <h3 style="color:var(--gold); font-size:14px; margin-bottom:15px;">👥 УЧАСТНИКИ ВАШЕГО СКВАДА</h3>
+            <div id="squad-members" class="card-list"></div>
         </div>
     </div>
 
-    <div id="shop" class="page"><h2 style="margin-top:45px; font-family:'Orbitron';">🏦 TECH MARKET</h2><div id="shop-items" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
-    
+    <div id="shop" class="page">
+        <h2 style="margin-top:45px;">🏦 Техно-Рынок</h2>
+        <div class="card-list">
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,69,0,0.2) 0%, rgba(20,20,20,0.9) 100%); border-color:rgba(255,69,0,0.5);">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="info-btn" onclick="showInfo('turbo')">?</div>
+                    <div><div style="font-weight:700; color:#fff; font-size:17px;">🔥 ТУРБО-РЕЖИМ</div><div id="t-left-disp" style="color:var(--gold); font-size:12px; font-weight:800;">ЗАРЯДОВ: 3 / 3</div></div>
+                </div>
+                <button class="buy-btn" id="turbo-start" onclick="activateTurbo()" style="background:#ff4500; color:#fff">ПУСК</button>
+            </div>
+            <div id="shop-items"></div>
+        </div>
+    </div>
+
     <div id="tasks" class="page">
-        <h2 style="margin-top:45px; font-family:'Orbitron';">📅 QUEST LOG</h2>
-        <div class="daily-grid" id="daily-rewards" style="width:90%; margin-bottom:25px; display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;"></div>
-        <button class="buy-btn" style="width:90%; padding:24px; margin-bottom:30px;" onclick="claimDaily()">COLLECT DAILY REWARD</button>
-        <div id="task-list" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-             <div class="card">
-                <div><b style="font-size:16px;">Follow NeoTap Channel</b><br><span style="color:var(--main-color); font-weight:900;">+10,000 COINS</span></div>
-                <button class="buy-btn" onclick="checkSub()">CHECK</button>
+        <h2 style="margin-top:45px;">📅 Майнинг Квесты</h2>
+        <div class="daily-grid" id="daily-rewards"></div>
+        <button class="buy-btn" style="width: 92%; margin-top: 25px; padding: 22px;" onclick="claimDaily()">ЗАБРАТЬ ПОДАРОК</button>
+        <div class="card-list" id="task-container" style="margin-top:30px;">
+            <div class="card" id="chan-task">
+                <div class="card-info"><div><div style="font-weight:700; font-size:16px;">Следить за NeoTap</div><div style="color:var(--gold); font-weight:900; margin-top:6px;">+10,000 МОНЕТ</div></div></div>
+                <button class="buy-btn" id="sub-btn" onclick="checkSub()">ПРОВЕРИТЬ</button>
             </div>
         </div>
     </div>
 
     <div id="friends" class="page">
-        <h2 style="margin-top:45px; font-family:'Orbitron';">👥 REFERRAL NETWORK</h2>
-        <button class="buy-btn" style="width:90%; padding:24px;" onclick="copyLink()">INVITE PARTNER</button>
-        <div id="friends-list" style="width:100%; display:flex; flex-direction:column; align-items:center; margin-top:30px;"></div>
+        <h2 style="margin-top:45px;">👥 Реферальная Сеть</h2>
+        <div style="background:var(--card); backdrop-filter:blur(20px); padding:40px; border-radius:35px; width:82%; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+            <p style="color:#aaa; font-size:16px; margin-bottom:30px; line-height:1.6;">Масштабируй команду и получай 10,000 монет за каждого активного майнера!</p>
+            <button class="buy-btn" style="width:100%; padding:20px;" onclick="copyLink()">ПОЛУЧИТЬ ССЫЛКУ</button>
+        </div>
+        <div id="friends-list" class="card-list" style="margin-top:30px;"></div>
     </div>
 
-    <!-- НАВИГАЦИЯ -->
+    <!-- НАВИГАЦИЯ (7 КОЛОНОК) -->
     <div class="nav">
-        <div class="nav-item active" onclick="showPage('game')"><span>🎮</span>Game</div>
-        <div class="nav-item" onclick="showPage('top')"><span>🏆</span>Top</div>
-        <div class="nav-item" onclick="showPage('squads')"><span>🛡️</span>Squad</div>
-        <div class="nav-item" onclick="showPage('crypto')"><span>💎</span>Crypto</div>
-        <div class="nav-item" onclick="showPage('shop')"><span>🏦</span>Shop</div>
-        <div class="nav-item" onclick="showPage('tasks')"><span>📅</span>Quest</div>
-        <div class="nav-item" onclick="showPage('friends')"><span>👥</span>Social</div>
+        <div class="nav-item active" onclick="showPage('game')"><span>🎮</span>Игра</div>
+        <div class="nav-item" onclick="showPage('top')"><span>🏆</span>Топ</div>
+        <div class="nav-item" onclick="showPage('squads')"><span>🛡️</span>Сквад</div>
+        <div class="nav-item" onclick="showPage('crypto')"><span>💎</span>Крипто</div>
+        <div class="nav-item" onclick="showPage('shop')"><span>🏦</span>Рынок</div>
+        <div class="nav-item" onclick="showPage('tasks')"><span>📅</span>Зад.</div>
+        <div class="nav-item" onclick="showPage('friends')"><span>👥</span>Друзья</div>
     </div>
 
-    <!-- ВЕСЬ JS (СОХРАНЕН ПОЛНОСТЬЮ) -->
     <script>
+        // ИНИЦИАЛИЗАЦИЯ TG WEB APP
         let tg = window.Telegram.WebApp; tg.expand();
         const USER_ID = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 123;
         const API_URL = "https://nonprovincial-ireland-rubrically.ngrok-free.dev";
         const fetchOpt = { headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' } };
 
-        let state = { coins: 0, energy: 1000, tapLvl: 1, srvLvl: 0, nodeLvl: 0, aiLvl: 0, turbo: 3, isTurbo: false, wallet: '', squad_id: 0, last_daily: '', streak: 0, sub_done: 0 };
+        // СОСТОЯНИЕ ИГРЫ (СОХРАНЕНО ВСЁ)
+        let state = { coins: 0, energy: 1000, tapLvl: 1, srvLvl: 0, nodeLvl: 0, aiLvl: 0, turbo: 3, isTurbo: false, last_daily: '', streak: 0, sub_done: 0, squad_id: 0, wallet: '' };
         let lastLvlIdx = -1;
 
+        const SHOP_DATA = [
+            { id: 'tap', name: 'Нейрочип "Клик"', price: 1000, ratio: 3.2, desc: 'Прокачивает нейронный интерфейс, увеличивая доход с каждого касания.' },
+            { id: 'srv', name: 'Облачная Ферма', price: 10000, inc: 1, ratio: 2.1, desc: 'Автоматизированный сервер для майнинга в фоновом режиме.' },
+            { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 15, ratio: 2.3, desc: 'Сверхмощный узел сети для высокого пассивного дохода.' },
+            { id: 'ai', name: 'Ядро Сингулярности', price: 2000000, inc: 200, ratio: 2.6, desc: 'Вершина технологий NeoTap. Генерирует колоссальную прибыль.' }
+        ];
+
         const LEAGUES = [
-            { n: "BRONZE", min: 0, next: 50000, c: "#cd7f32" },
-            { n: "SILVER", min: 50000, next: 250000, c: "#c0c0c0" },
-            { n: "GOLD", min: 250000, next: 1000000, c: "#f3ba2f" },
-            { n: "PLATINUM", min: 1000000, next: 5000000, c: "#e5e4e2" },
-            { n: "DIAMOND", min: 5000000, next: 10000000000, c: "#b9f2ff" }
+            { n: "Бронзовая", min: 0, next: 50000, c: "#cd7f32" },
+            { n: "Серебряная", min: 50000, next: 250000, c: "#c0c0c0" },
+            { n: "Золотая", min: 250000, next: 1000000, c: "#f3ba2f" },
+            { n: "Платиновая", min: 1000000, next: 5000000, c: "#e5e4e2" },
+            { n: "Бриллиантовая", min: 5000000, next: 10000000000, c: "#b9f2ff" }
         ];
 
         async function loadData() {
@@ -313,39 +416,44 @@
                     Object.assign(state, d); 
                     updateUI(); renderShop(); 
                     if(d.wallet) {
-                        document.getElementById('wallet-addr').innerText = d.wallet.substring(0,10) + '...';
+                        document.getElementById('wallet-addr').innerText = d.wallet.substring(0,8) + '...';
                         document.getElementById('conn-btn').style.display = 'none';
                     }
                     if(d.ton_price) document.getElementById('ton-price').innerText = '$' + d.ton_price.toFixed(2);
-                    if(d.offline_earned > 0) showAlert(`💰 OFFLINE PROFIT: +${Math.floor(d.offline_earned).toLocaleString()}`);
+                    if(d.offline_earned > 0) showAlert(`💰 Оффлайн доход: +${Math.floor(d.offline_earned).toLocaleString()}`);
                 }
-            } catch(e) { showAlert("SYNC ERROR"); }
+            } catch(e) { showAlert("Ошибка синхронизации"); }
         }
 
         async function sync() {
-            let dot = document.getElementById('sync-dot');
-            dot.style.opacity = '1';
+            document.body.classList.add('syncing');
             try { await fetch(`${API_URL}/update_user/${USER_ID}`, { method: 'POST', ...fetchOpt, body: JSON.stringify(state) }); } catch(e) {}
-            setTimeout(() => dot.style.opacity = '0.3', 500);
+            setTimeout(() => document.body.classList.remove('syncing'), 500);
         }
 
         function updateUI() {
             document.getElementById('balance').innerText = Math.floor(state.coins).toLocaleString();
             document.getElementById('e-val').innerText = Math.floor(state.energy);
             document.getElementById('e-fill').style.width = (state.energy / 10) + '%';
-            document.getElementById('p-inc').innerText = (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200).toLocaleString();
-            document.getElementById('tap-info').innerText = 'x' + (state.isTurbo ? state.tapLvl * 5 : state.tapLvl) + ' POWER';
+            document.getElementById('p-inc').innerText = (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200);
+            document.getElementById('tap-info').innerText = 'x' + (state.isTurbo ? state.tapLvl * 5 : state.tapLvl) + ' МОЩНОСТЬ';
+            document.getElementById('t-left-disp').innerText = `ЗАРЯДОВ: ${state.turbo} / 3`;
+            
+            if(state.sub_done === 1) document.getElementById('chan-task').style.display = 'none';
 
             let curLIdx = [...LEAGUES].reverse().findIndex(x => state.coins >= x.min);
-            let l = LEAGUES[LEAGUES.length - 1 - curLIdx];
-            
-            // СМЕНА ЦВЕТОВОЙ ГАММЫ (НОВОЕ)
-            document.documentElement.style.setProperty('--main-color', l.c);
-            document.documentElement.style.setProperty('--shadow', l.c + '44');
-
-            document.getElementById('league-name').innerText = l.n + ' LEAGUE';
-            document.getElementById('aura').style.background = l.c;
-            document.getElementById('l-progress').style.width = Math.min(100, ((state.coins - l.min) / (l.next - l.min)) * 100) + '%';
+            let lIdx = LEAGUES.length - 1 - curLIdx;
+            let l = LEAGUES[lIdx];
+            if(lastLvlIdx !== -1 && lIdx > lastLvlIdx) {
+                document.getElementById('new-l-name').innerText = l.n;
+                document.getElementById('league-up-modal').style.display = 'flex';
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+            lastLvlIdx = lIdx;
+            document.getElementById('league-name').innerText = l.n + ' лига';
+            document.getElementById('league-name').style.color = l.c;
+            document.getElementById('aura').style.background = `radial-gradient(circle, ${l.c} 0%, transparent 70%)`;
+            document.getElementById('l-progress').style.width = Math.min(100, ((state.coins-l.min)/(l.next-l.min))*100) + '%';
             document.getElementById('l-progress').style.background = l.c;
             renderDaily();
         }
@@ -356,12 +464,9 @@
                 state.coins += pwr; if(!state.isTurbo) state.energy -= state.tapLvl;
                 const cX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
                 const cY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-                
-                // 3D Tilt эффект
                 const rect = coinBtn.getBoundingClientRect();
                 const rX = (cY - rect.top - rect.height/2)/7; const rY = (cX - rect.left - rect.width/2)/7;
-                coinBtn.style.transform = `perspective(1000px) rotateX(${-rX}deg) rotateY(${rY}deg) scale(0.96)`;
-                
+                coinBtn.style.transform = `perspective(1000px) rotateX(${-rX}deg) rotateY(${rY}deg) scale(0.94)`;
                 createParticles(cX, cY); showAnim(cX, cY, '+' + pwr); updateUI();
                 tg.HapticFeedback.impactOccurred(state.isTurbo ? 'medium' : 'light');
             }
@@ -369,9 +474,7 @@
 
         function createParticles(x, y) {
             for(let i=0; i<6; i++) {
-                let p = document.createElement('div'); p.className = 'particle'; 
-                p.style.width = '6px'; p.style.height = '6px'; p.style.background = 'var(--main-color)';
-                p.style.left = x + 'px'; p.style.top = y + 'px';
+                let p = document.createElement('div'); p.className = 'particle'; p.style.left = x + 'px'; p.style.top = y + 'px';
                 p.style.setProperty('--dx', (Math.random()*120 - 60) + 'px'); p.style.setProperty('--dy', (Math.random()*120 - 60) + 'px');
                 document.body.appendChild(p); setTimeout(() => p.remove(), 700);
             }
@@ -383,27 +486,44 @@
             document.body.appendChild(d); setTimeout(() => d.remove(), 800);
         }
 
-        function renderShop() {
-            const SHOP_DATA = [
-                { id: 'tap', name: 'Neuro-Chip Tap', price: 1000, ratio: 3.2 },
-                { id: 'srv', name: 'Cloud Farm', price: 10000, ratio: 2.1 },
-                { id: 'node', name: 'Quantum Node', price: 150000, ratio: 2.3 },
-                { id: 'ai', name: 'Singularity Core', price: 2000000, ratio: 2.6 }
-            ];
-            let h = '';
-            SHOP_DATA.forEach(i => {
-                let lvl = i.id === 'tap' ? state.tapLvl - 1 : state[i.id + 'Lvl'];
-                let p = Math.floor(i.price * Math.pow(i.ratio, lvl));
-                h += `<div class="card"><div><span class="lvl-badge" style="background:var(--shadow); color:var(--main-color); padding:5px 10px; border-radius:10px; font-size:10px;">LVL ${lvl}</span><br><b style="font-size:17px;">${i.name}</b><br><span style="color:var(--main-color); font-weight:900;">💰 ${p.toLocaleString()}</span></div><button class="buy-btn" onclick="buy('${i.id}', ${p})">UPGRADE</button></div>`;
-            });
-            document.getElementById('shop-items').innerHTML = h;
-        }
-
         function buy(id, p) {
             if(state.coins >= p) {
                 state.coins -= p; if(id === 'tap') state.tapLvl++; else state[id + 'Lvl']++;
-                renderShop(); updateUI(); sync(); showAlert("UPGRADED!");
-            } else showAlert("NOT ENOUGH COINS!");
+                renderShop(); updateUI(); sync(); showAlert("Технология внедрена!");
+            } else showAlert("Мало капитала!");
+        }
+
+        function activateTurbo() {
+            if(state.turbo > 0 && !state.isTurbo) {
+                state.turbo--; state.isTurbo = true;
+                showPage('game'); document.body.classList.add('turbo-mode');
+                document.getElementById('t-timer').style.display = 'block';
+                let tl = 15;
+                let int = setInterval(() => {
+                    tl--; document.getElementById('t-timer').innerText = tl + 'с';
+                    if(tl <= 0) { clearInterval(int); state.isTurbo = false; document.body.classList.remove('turbo-mode'); document.getElementById('t-timer').style.display = 'none'; showPage('shop'); }
+                }, 1000);
+                sync();
+            } else showAlert("Заряды кончились!");
+        }
+
+        function connectWallet() {
+            state.wallet = "EQ" + Math.random().toString(36).substring(2, 12).toUpperCase();
+            document.getElementById('wallet-addr').innerText = state.wallet.substring(0,8) + '...';
+            document.getElementById('conn-btn').style.display = 'none';
+            sync(); showAlert("Кошелек TON привязан!");
+        }
+
+        async function placeBet(dir) {
+            if(state.coins < 10000) return showAlert("Минимум 10,000 монет!");
+            showAlert("Прогноз принят... Ожидаем 5 сек");
+            let r = await fetch(`${API_URL}/place_bet/${USER_ID}`, { method: 'POST', ...fetchOpt, body: JSON.stringify({amount: 10000}) });
+            let res = await r.json();
+            setTimeout(() => {
+                if(res.status === 'win') { showAlert("ВЫИГРЫШ +10,000!"); state.coins += 10000; }
+                else { showAlert("ПРОИГРЫШ -10,000"); state.coins -= 10000; }
+                updateUI();
+            }, 5000);
         }
 
         async function joinSquad() {
@@ -411,20 +531,8 @@
             if(!n) return;
             let r = await fetch(`${API_URL}/join_squad/${USER_ID}/${n}`, { method: 'POST', ...fetchOpt });
             let res = await r.json();
-            if(res.status === 'ok') { state.squad_id = res.squad_id; showAlert("SQUAD JOINED!"); showPage('squads'); }
+            if(res.status === 'ok') { state.squad_id = res.squad_id; showAlert("Вы в скваде!"); showPage('squads'); }
             else showAlert(res.message);
-        }
-
-        async function placeBet(dir) {
-            if(state.coins < 10000) return showAlert("MIN 10,000!");
-            showAlert("PREDICTION SENT...");
-            let r = await fetch(`${API_URL}/place_bet/${USER_ID}`, { method: 'POST', ...fetchOpt, body: JSON.stringify({amount: 10000}) });
-            let res = await r.json();
-            setTimeout(() => {
-                if(res.status === 'win') { showAlert("WIN +10,000!"); state.coins += 10000; }
-                else { showAlert("LOSS -10,000"); state.coins -= 10000; }
-                updateUI();
-            }, 5000);
         }
 
         async function showPage(p) {
@@ -437,47 +545,50 @@
             if(p === 'top') {
                 let r = await fetch(`${API_URL}/get_top`, fetchOpt);
                 let top = await r.json();
-                document.getElementById('top-list').innerHTML = top.map((u, i) => `<div class="list-item"><div class="list-rank">${i+1}</div><div style="flex:1; font-weight:800;">${u.username}</div><div style="color:var(--main-color); font-weight:900;">${Math.floor(u.coins).toLocaleString()}</div></div>`).join('');
+                document.getElementById('top-list').innerHTML = top.map((u, i) => `<div class="list-item"><div class="list-rank">${i+1}</div><div class="list-name">${u.username}</div><div class="list-score">${Math.floor(u.coins).toLocaleString()}</div></div>`).join('');
             }
             if(p === 'squads') {
                 let r = await fetch(`${API_URL}/get_squads`, fetchOpt);
                 let sqs = await r.json();
-                document.getElementById('squad-list').innerHTML = sqs.map((s, i) => `<div class="list-item"><div class="list-rank">${i+1}</div><div style="flex:1; font-weight:800;">${s.name} ${state.squad_id==s.id?'✅':''}</div><div>${Math.floor(s.coins).toLocaleString()}</div></div>`).join('');
+                document.getElementById('squad-list').innerHTML = sqs.map((s, i) => `<div class="list-item"><div class="list-rank">${i+1}</div><div class="list-name">${s.name} ${state.squad_id==s.id?'✅':''}</div><div class="list-score">${Math.floor(s.coins).toLocaleString()}</div></div>`).join('');
                 if(state.squad_id > 0) {
                     document.getElementById('my-sq-box').style.display = 'block';
                     let r2 = await fetch(`${API_URL}/get_squad_members/${state.squad_id}`, fetchOpt);
                     let mems = await r2.json();
-                    document.getElementById('squad-members').innerHTML = mems.map(m => `<div class="list-item"><div>${m.username}</div><div style="color:var(--main-color);">${Math.floor(m.coins).toLocaleString()}</div></div>`).join('');
+                    document.getElementById('squad-members').innerHTML = mems.map(m => `<div class="list-item"><div class="list-name">${m.username}</div><div class="list-score">${Math.floor(m.coins).toLocaleString()}</div></div>`).join('');
                 }
             }
             if(p === 'friends') {
                 let r = await fetch(`${API_URL}/get_friends/${USER_ID}`, fetchOpt);
                 let f = await r.json();
-                document.getElementById('friends-list').innerHTML = f.map(u => `<div class="list-item"><div>${u.username}</div><div>${Math.floor(u.coins).toLocaleString()}</div></div>`).join('') || "NO PARTNERS YET";
+                document.getElementById('friends-list').innerHTML = f.map(u => `<div class="list-item"><div class="list-name">${u.username}</div><div class="list-score">${Math.floor(u.coins).toLocaleString()}</div></div>`).join('') || "Никого нет";
             }
         }
 
-        function connectWallet() {
-            state.wallet = "EQ" + Math.random().toString(36).substring(2, 12).toUpperCase();
-            document.getElementById('wallet-addr').innerText = state.wallet.substring(0,10) + '...';
-            document.getElementById('conn-btn').style.display = 'none';
-            sync(); showAlert("WALLET CONNECTED!");
+        function renderShop() {
+            let h = '';
+            SHOP_DATA.forEach(i => {
+                let lvl = i.id === 'tap' ? state.tapLvl - 1 : state[i.id + 'Lvl'];
+                let p = Math.floor(i.price * Math.pow(i.ratio, lvl));
+                h += `<div class="card"><div class="card-info"><div class="info-btn" onclick="showInfo('${i.id}')">?</div><div><span class="lvl-badge">LEVEL ${lvl}</span><br><b style="font-size:16px;">${i.name}</b><div style="color:var(--gold); font-weight:800; margin-top:5px;">💰 ${p.toLocaleString()}</div></div></div><button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
+            });
+            document.getElementById('shop-items').innerHTML = h;
         }
 
         async function checkSub() {
             let r = await fetch(`${API_URL}/check_sub/${USER_ID}`, fetchOpt);
             let d = await r.json();
             if(d.status === 'member') {
-                state.coins += 10000; state.sub_done = 1; updateUI(); sync(); showAlert("BONUS COLLECTED!");
-            } else { showAlert("FOLLOW THE CHANNEL!"); tg.openTelegramLink("https://t.me/NeoTapCoin"); }
+                state.coins += 10000; state.sub_done = 1; updateUI(); sync(); showAlert("Награда 10,000 получена!");
+            } else { showAlert("Сначала подпишитесь!"); tg.openTelegramLink("https://t.me/NeoTapCoin"); }
         }
 
         function claimDaily() {
             let today = new Date().toDateString();
             if(state.last_daily !== today) {
                 state.streak++; state.coins += state.streak * 1000;
-                state.last_daily = today; sync(); updateUI(); showAlert("DAILY BONUS COLLECTED!");
-            } else showAlert("COME BACK TOMORROW!");
+                state.last_daily = today; sync(); updateUI(); showAlert("Бонус зачислен!");
+            } else showAlert("Заходи завтра!");
         }
 
         function showAlert(t) {
@@ -485,40 +596,42 @@
             setTimeout(() => a.classList.remove('show'), 2500);
         }
 
+        function showInfo(id) {
+            let i = id === 'turbo' ? {name:'Турбо', desc:'x5 силы тапа на 15 сек.'} : SHOP_DATA.find(x => x.id === id);
+            document.getElementById('m-title').innerText = i.name;
+            document.getElementById('m-text').innerText = i.desc;
+            document.getElementById('desc-modal').style.display = 'flex';
+        }
+
         function copyLink() {
             navigator.clipboard.writeText(`https://t.me/NeoTapCoin_bot?start=${USER_ID}`);
-            showAlert("LINK COPIED!");
+            showAlert("Ссылка скопирована!");
         }
 
         function renderDaily() {
-            let h = ''; for(let i=1; i<=8; i++) { 
-                let act = state.streak + 1 === i ? 'current' : ''; 
-                h += `<div class="daily-day ${act}" style="background:var(--glass); padding:10px; border-radius:15px; border:1px solid var(--glass-border); text-align:center; font-size:10px;">Day ${i}</div>`; 
-            }
+            let h = ''; for(let i=1; i<=8; i++) { let act = state.streak + 1 === i ? 'current' : ''; h += `<div class="daily-day ${act}">День ${i}</div>`; }
             document.getElementById('daily-rewards').innerHTML = h;
         }
 
         function createPollen() {
             const p = document.createElement('div'); p.className = 'pollen';
-            const size = Math.random() * 4 + 2; p.style.width = size + 'px'; p.style.height = size + 'px';
+            const size = Math.random() * 5 + 2; p.style.width = size + 'px'; p.style.height = size + 'px';
             p.style.left = Math.random() * 100 + 'vw'; document.body.appendChild(p);
-            setTimeout(() => p.remove(), 20000);
+            setTimeout(() => p.remove(), 18000);
         }
-        setInterval(createPollen, 1200);
+        setInterval(createPollen, 1500);
 
         setInterval(() => {
-            let income = (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200);
-            state.coins += income / 100;
-            if(state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.015);
+            state.coins += (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200) / 100;
+            if(state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.012);
             updateUI();
         }, 10);
-
         setInterval(sync, 5000);
-        
+
         const coinBtn = document.getElementById('coin-btn');
         coinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); });
         coinBtn.addEventListener('mousedown', handleTap);
-        window.addEventListener('mouseup', () => coinBtn.style.transform = 'perspective(1000px) scale(1)');
+        window.addEventListener('mouseup', () => coinBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)');
 
         loadData();
     </script>
