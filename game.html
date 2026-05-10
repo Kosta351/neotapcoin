@@ -61,7 +61,7 @@
             to { transform: translateY(-10vh) translateX(60px); opacity: 0; }
         }
 
-        /* ПРЕМИАЛЬНАЯ НАВИГАЦИЯ - 6 КОЛОНОК */
+        /* ПРЕМИАЛЬНАЯ НАВИГАЦИЯ (6 колонок под Сквады) */
         .nav { 
             position: fixed; 
             bottom: 15px; 
@@ -81,7 +81,7 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            font-size: 9px; 
+            font-size: 8px; 
             color: #555; 
             cursor: pointer; 
             font-weight: 700; 
@@ -165,7 +165,7 @@
         }
         .turbo-mode .turbo-timer { display: block; }
 
-        /* КАРТОЧКИ И СПИСКИ */
+        /* КАРТОЧКИ И СПИСКИ (МАРКЕТ) */
         .card-list { width: 92%; margin-top: 15px; }
         .card { 
             background: var(--card); backdrop-filter: blur(20px); border-radius: 26px; 
@@ -192,7 +192,10 @@
             font-weight: 800; cursor: pointer; font-size: 14px; color: #000;
             box-shadow: 0 6px 25px rgba(243, 186, 47, 0.3); transition: 0.2s;
         }
+        .buy-btn:active { transform: translateY(2px); box-shadow: none; }
+        .buy-btn:disabled { background: #222; color: #555; box-shadow: none; cursor: default; }
 
+        /* СПИСКИ (ТОП И ДРУЗЬЯ) */
         .list-item { 
             background: var(--card); border-radius: 22px; padding: 18px; margin-bottom: 12px; 
             display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.04); 
@@ -209,25 +212,34 @@
         }
         .daily-day.current { border-color: var(--gold); color: #fff; background: rgba(243, 186, 47, 0.18); box-shadow: 0 0 20px rgba(243, 186, 47, 0.15); }
 
-        /* МОДАЛКИ */
+        /* МОДАЛКИ И УВЕДОМЛЕНИЯ */
         #custom-alert { 
             position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-180px); 
-            background: rgba(25, 25, 25, 0.98); border: 1px solid var(--gold); 
-            padding: 18px 40px; border-radius: 24px; z-index: 8000; transition: 0.6s; 
-            font-weight: 800; text-align: center; pointer-events: none;
+            background: rgba(25, 25, 25, 0.98); backdrop-filter: blur(20px); border: 1px solid var(--gold); 
+            padding: 18px 40px; border-radius: 24px; z-index: 8000; transition: 0.6s cubic-bezier(0.17, 0.89, 0.32, 1.49); 
+            font-weight: 800; box-shadow: 0 25px 60px rgba(0,0,0,0.9); text-align: center; pointer-events: none;
         }
         #custom-alert.show { transform: translateX(-50%) translateY(0); }
+
+        #league-up-modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.97); 
+            z-index: 9000; display: none; align-items: center; justify-content: center; flex-direction: column; 
+            text-align: center; animation: modalFade 0.7s; 
+        }
+        @keyframes modalFade { from {opacity: 0;} to {opacity: 1;} }
 
         /* ЭФФЕКТЫ ТАПА */
         .tap-anim { 
             position: absolute; color: #fff; font-weight: 900; font-size: 44px; 
-            pointer-events: none; animation: floatSpark 0.9s forwards; 
+            pointer-events: none; animation: floatSpark 0.9s cubic-bezier(0.2, 1, 0.2, 1) forwards; 
             z-index: 200; text-shadow: 0 0 25px var(--gold);
         }
-        @keyframes floatSpark { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-180px); } }
+        @keyframes floatSpark { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-180px) scale(1.6); } }
         
-        .particle { position: absolute; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 150; animation: partOut 0.7s forwards; }
+        .particle { position: absolute; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 150; animation: partOut 0.7s ease-out forwards; }
         @keyframes partOut { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
+
+        #e-fill { transition: width 0.2s linear; }
     </style>
 </head>
 <body>
@@ -235,7 +247,22 @@
     <div class="bg-wrap"></div>
     <div id="custom-alert">NeoTap System</div>
 
-    <!-- СТРАНИЦЫ -->
+    <div id="league-up-modal">
+        <div style="font-size: 52px; font-weight: 900; color: var(--gold); text-shadow: 0 0 45px var(--gold); margin-bottom: 10px;">НОВЫЙ РАНГ!</div>
+        <div id="new-l-name" style="font-size: 28px; font-weight: 700; text-transform: uppercase; color: #fff; letter-spacing: 8px;">ЗОЛОТО</div>
+        <div style="font-size:130px; margin: 40px 0; filter: drop-shadow(0 0 30px gold);">🏆</div>
+        <button class="buy-btn" style="padding: 25px 80px; font-size: 20px;" onclick="document.getElementById('league-up-modal').style.display='none'">К ПОБЕДАМ!</button>
+    </div>
+
+    <div id="desc-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:5000; display:none; align-items:center; justify-content:center;" onclick="this.style.display='none'">
+        <div class="modal-content" style="background:#111; width:82%; padding:40px; border-radius:35px; border:1px solid #222; text-align:center;" onclick="event.stopPropagation()">
+            <h3 id="m-title" style="color:var(--gold); margin-top:0; font-size:26px;"></h3>
+            <p id="m-text" style="color:#999; line-height:1.8; font-size:17px; margin: 25px 0;"></p>
+            <button class="buy-btn" style="width:100%;" onclick="document.getElementById('desc-modal').style.display='none'">ПОНЯТНО</button>
+        </div>
+    </div>
+
+    <!-- ГЛАВНЫЙ ЭКРАН (ИГРА) -->
     <div id="game" class="page active">
         <div class="header">
             <div id="league-name">Бронзовая лига</div>
@@ -243,6 +270,7 @@
             <div class="balance-wrap"><div id="balance">0</div><div id="sync-dot"></div></div>
             <div style="color: #666; font-size: 16px; font-weight: 800; margin-top:8px;">💸 ПРИБЫЛЬ: +<span id="p-inc">0</span> / СЕК</div>
         </div>
+
         <div class="coin-section">
             <div class="sun-beams"></div>
             <div class="sun-glare"></div>
@@ -250,34 +278,36 @@
             <div class="coin-aura" id="aura"></div>
             <div class="coin" id="coin-btn"></div>
         </div>
+
         <div style="width: 85%; margin-top: auto; margin-bottom: 40px;">
-            <div style="height: 14px; background: rgba(255,255,255,0.04); border-radius: 20px; overflow: hidden;"><div id="e-fill" style="width: 100%; height: 100%; background: var(--gold);"></div></div>
+            <div style="height: 14px; background: rgba(255,255,255,0.04); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);"><div id="e-fill" style="width: 100%; height: 100%; background: var(--gold);"></div></div>
             <div style="display:flex; justify-content: space-between; margin-top:14px; font-size:14px; font-weight:900; color:#555;">
-                <span>⚡️ <span id="e-val">1000</span> / 1000</span>
+                <span>⚡️ <span id="e-val" style="color:#888;">1000</span> / 1000</span>
                 <span id="tap-info" style="color:var(--gold)">x1 МОЩНОСТЬ</span>
             </div>
         </div>
     </div>
 
-    <div id="top" class="page"><h2 style="margin-top:45px;">🏆 Глобальный Рейтинг</h2><div id="top-list" class="card-list"></div></div>
+    <!-- СТРАНИЦА: ТОП ЛИДЕРОВ -->
+    <div id="top" class="page"><h2 style="margin-top:45px; letter-spacing:1px;">🏆 Глобальный Рейтинг</h2><div id="top-list" class="card-list" style="width:92%;"></div></div>
 
-    <!-- СТРАНИЦА СКВАДОВ -->
+    <!-- СТРАНИЦА: СКВАДЫ -->
     <div id="squads" class="page">
-        <h2 style="margin-top:45px;">🛡️ Сквады Альянса</h2>
+        <h2 style="margin-top:45px; letter-spacing:1px;">🛡️ Сквады Альянса</h2>
         <div style="width:92%; margin-bottom:20px; display:flex; gap:10px;">
             <input type="text" id="sq-input" placeholder="Имя сквада..." style="flex:1; padding:18px; border-radius:20px; background:#111; border:1px solid #333; color:#fff; font-weight:700;">
             <button class="buy-btn" onclick="joinSquad()">ВСТУПИТЬ</button>
         </div>
         <div id="squad-list" class="card-list" style="width:92%;"></div>
-        
-        <div id="my-squad-section" style="width:92%; display:none; margin-top:30px;">
-            <h3 style="color:var(--gold);">👥 Участники вашего сквада</h3>
+        <div id="my-sq-box" style="width:92%; display:none; margin-top:20px;">
+            <h3 style="color:var(--gold); font-size:14px; margin-bottom:15px;">👥 УЧАСТНИКИ ВАШЕГО СКВАДА</h3>
             <div id="squad-members" class="card-list"></div>
         </div>
     </div>
 
+    <!-- СТРАНИЦА: РЫНОК -->
     <div id="shop" class="page">
-        <h2 style="margin-top:45px;">🏦 Техно-Рынок</h2>
+        <h2 style="margin-top:45px; letter-spacing:1px;">🏦 Техно-Рынок</h2>
         <div class="card-list">
             <div class="card" style="background: linear-gradient(135deg, rgba(255,69,0,0.2) 0%, rgba(20,20,20,0.9) 100%); border-color:rgba(255,69,0,0.5);">
                 <div style="display:flex; align-items:center; gap:15px;">
@@ -290,31 +320,38 @@
         </div>
     </div>
 
+    <!-- СТРАНИЦА: ЗАДАНИЯ -->
     <div id="tasks" class="page">
-        <h2 style="margin-top:45px;">📅 Майнинг Квесты</h2>
+        <h2 style="margin-top:45px; letter-spacing:1px;">📅 Майнинг Квесты</h2>
         <div class="daily-grid" id="daily-rewards"></div>
         <button class="buy-btn" style="width: 92%; margin-top: 25px; padding: 22px;" onclick="claimDaily()">ЗАБРАТЬ ПОДАРОК</button>
+        
         <div class="card-list" id="task-container" style="margin-top:30px;">
             <div class="card" id="chan-task">
                 <div class="card-info"><div><div style="font-weight:700; font-size:16px;">Следить за NeoTap</div><div style="color:var(--gold); font-weight:900; margin-top:6px;">+10,000 МОНЕТ</div></div></div>
                 <button class="buy-btn" id="sub-btn" onclick="checkSub()">ПРОВЕРИТЬ</button>
             </div>
+            <p id="no-tasks" style="display:none; color:#444; margin-top:40px; font-weight:800; text-align:center; letter-spacing:2px;">ВСЕ КОНТРАКТЫ ЗАКРЫТЫ</p>
         </div>
     </div>
 
+    <!-- СТРАНИЦА: ДРУЗЬЯ -->
     <div id="friends" class="page">
-        <h2 style="margin-top:45px;">👥 Друзья</h2>
-        <button class="buy-btn" style="width:92%;" onclick="copyLink()">ССЫЛКА</button>
+        <h2 style="margin-top:45px; letter-spacing:1px;">👥 Реферальная Сеть</h2>
+        <div style="background:var(--card); backdrop-filter:blur(20px); padding:40px; border-radius:35px; width:82%; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+            <p style="color:#aaa; font-size:16px; margin-bottom:30px; line-height:1.6;">Масштабируй команду и получай 10,000 монет за каждого активного майнера!</p>
+            <button class="buy-btn" style="width:100%; padding:20px;" onclick="copyLink()">ПОЛУЧИТЬ ССЫЛКУ</button>
+        </div>
         <div id="friends-list" class="card-list" style="margin-top:30px;"></div>
     </div>
 
-    <!-- НАВИГАЦИЯ -->
+    <!-- НИЖНЕЕ МЕНЮ НАВИГАЦИИ -->
     <div class="nav">
         <div class="nav-item active" onclick="showPage('game')"><span>🎮</span>Игра</div>
         <div class="nav-item" onclick="showPage('top')"><span>🏆</span>Топ</div>
         <div class="nav-item" onclick="showPage('squads')"><span>🛡️</span>Сквады</div>
         <div class="nav-item" onclick="showPage('shop')"><span>🏦</span>Рынок</div>
-        <div class="nav-item" onclick="showPage('tasks')"><span>📅</span>Квесты</div>
+        <div class="nav-item" onclick="showPage('tasks')"><span>📅</span>Задания</div>
         <div class="nav-item" onclick="showPage('friends')"><span>👥</span>Друзья</div>
     </div>
 
@@ -328,10 +365,10 @@
         let lastLvlIdx = -1;
 
         const SHOP_DATA = [
-            { id: 'tap', name: 'Нейрочип "Клик"', price: 1000, ratio: 3.2, desc: 'Увеличивает доход с тапа.' },
-            { id: 'srv', name: 'Облачная Ферма', price: 10000, inc: 1, ratio: 2.1, desc: 'Фоновый доход.' },
-            { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 15, ratio: 2.3, desc: 'Высокий доход.' },
-            { id: 'ai', name: 'Ядро Сингулярности', price: 2000000, inc: 200, ratio: 2.6, desc: 'Макс доход.' }
+            { id: 'tap', name: 'Нейрочип "Клик"', price: 1000, ratio: 3.2, desc: 'Прокачивает нейронный интерфейс, увеличивая доход с каждого касания монеты.' },
+            { id: 'srv', name: 'Облачная Ферма', price: 10000, inc: 1, ratio: 2.1, desc: 'Автоматизированный сервер для майнинга монет в фоновом режиме 24/7.' },
+            { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 15, ratio: 2.3, desc: 'Сверхмощный вычислительный узел сети, обеспечивающий высокий пассивный доход.' },
+            { id: 'ai', name: 'Ядро Сингулярности', price: 2000000, inc: 200, ratio: 2.6, desc: 'Вершина ИИ-технологий NeoTap. Генерирует колоссальную прибыль ежесекундно.' }
         ];
 
         const LEAGUES = [
@@ -348,9 +385,8 @@
                 let d = await r.json();
                 if(!d.error) { 
                     Object.assign(state, d); 
-                    updateUI(); 
-                    renderShop(); 
-                    if(d.offline_earned > 0) showAlert(`💰 Оффлайн доход: +${Math.floor(d.offline_earned).toLocaleString()}`);
+                    updateUI(); renderShop(); 
+                    if(d.offline_earned > 0) showAlert(`💰 Добыто в оффлайне: +${Math.floor(d.offline_earned).toLocaleString()}`);
                 }
             } catch(e) { showAlert("Ошибка сервера"); }
         }
@@ -367,14 +403,25 @@
             document.getElementById('e-fill').style.width = (state.energy / 10) + '%';
             document.getElementById('p-inc').innerText = (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200);
             document.getElementById('tap-info').innerText = 'x' + (state.isTurbo ? state.tapLvl * 5 : state.tapLvl) + ' МОЩНОСТЬ';
+            document.getElementById('t-left-disp').innerText = `ЗАРЯДОВ: ${state.turbo} / 3`;
             
+            if(state.sub_done === 1) { document.getElementById('chan-task').style.display = 'none'; document.getElementById('no-tasks').style.display = 'block'; }
+
             let curLIdx = [...LEAGUES].reverse().findIndex(x => state.coins >= x.min);
-            let l = LEAGUES[LEAGUES.length - 1 - curLIdx];
-            document.getElementById('league-name').innerText = l.n + ' лига';
-            document.getElementById('league-name').style.color = l.c;
+            let lIdx = LEAGUES.length - 1 - curLIdx;
+            let l = LEAGUES[lIdx];
+            if(lastLvlIdx !== -1 && lIdx > lastLvlIdx) {
+                document.getElementById('new-l-name').innerText = l.n;
+                document.getElementById('league-up-modal').style.display = 'flex';
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+            lastLvlIdx = lIdx;
+            let lEl = document.getElementById('league-name');
+            lEl.innerText = l.n + ' лига'; lEl.style.color = l.c;
             document.getElementById('aura').style.background = `radial-gradient(circle, ${l.c} 0%, transparent 70%)`;
             document.getElementById('l-progress').style.width = Math.min(100, ((state.coins - l.min) / (l.next - l.min)) * 100) + '%';
             document.getElementById('l-progress').style.background = l.c;
+            renderDaily();
         }
 
         function renderShop() {
@@ -382,7 +429,7 @@
             SHOP_DATA.forEach(i => {
                 let lvl = i.id === 'tap' ? state.tapLvl - 1 : state[i.id + 'Lvl'];
                 let p = Math.floor(i.price * Math.pow(i.ratio, lvl));
-                h += `<div class="card"><div class="card-info"><div><span class="lvl-badge">LEVEL ${lvl}</span><br><b>${i.name}</b><br>💰 ${p.toLocaleString()}</div></div><button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
+                h += `<div class="card"><div class="card-info"><div class="info-btn" onclick="showInfo('${i.id}')">?</div><div><span class="lvl-badge">LEVEL ${lvl}</span><br><b style="font-size:16px;">${i.name}</b><div style="color:var(--gold); font-weight:800; margin-top:5px;">💰 ${p.toLocaleString()}</div></div></div><button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
             });
             document.getElementById('shop-items').innerHTML = h;
         }
@@ -397,7 +444,7 @@
                 const rX = (cY - rect.top - rect.height/2)/7; const rY = (cX - rect.left - rect.width/2)/7;
                 coinBtn.style.transform = `perspective(1000px) rotateX(${-rX}deg) rotateY(${rY}deg) scale(0.94)`;
                 createParticles(cX, cY); showAnim(cX, cY, '+' + pwr); updateUI();
-                tg.HapticFeedback.impactOccurred('light');
+                tg.HapticFeedback.impactOccurred(state.isTurbo ? 'medium' : 'light');
             }
         }
 
@@ -418,8 +465,22 @@
         function buy(id, p) {
             if(state.coins >= p) {
                 state.coins -= p; if(id === 'tap') state.tapLvl++; else state[id + 'Lvl']++;
-                renderShop(); updateUI(); sync(); showAlert("Куплено!");
-            } else showAlert("Мало монет!");
+                renderShop(); updateUI(); sync(); showAlert("Технология внедрена!");
+            } else showAlert("Мало капитала!");
+        }
+
+        function activateTurbo() {
+            if(state.turbo > 0 && !state.isTurbo) {
+                state.turbo--; state.isTurbo = true;
+                showPage('game'); document.body.classList.add('turbo-mode');
+                document.getElementById('t-timer').style.display = 'block';
+                let tl = 15;
+                let int = setInterval(() => {
+                    tl--; document.getElementById('t-timer').innerText = tl + 'с';
+                    if(tl <= 0) { clearInterval(int); state.isTurbo = false; document.body.classList.remove('turbo-mode'); document.getElementById('t-timer').style.display = 'none'; showPage('shop'); }
+                }, 1000);
+                sync();
+            } else showAlert("Заряды кончились!");
         }
 
         async function joinSquad() {
@@ -429,6 +490,22 @@
             let res = await r.json();
             if(res.status === 'ok') { state.squad_id = res.squad_id; showAlert("Вы в скваде!"); showPage('squads'); }
             else showAlert(res.message);
+        }
+
+        async function checkSub() {
+            let r = await fetch(`${API_URL}/check_sub/${USER_ID}`, fetchOpt);
+            let d = await r.json();
+            if(d.status === 'member') {
+                state.coins += 10000; state.sub_done = 1; updateUI(); sync(); showAlert("Награда 10,000 получена!");
+            } else { showAlert("Сначала подпишитесь!"); tg.openTelegramLink("https://t.me/NeoTapCoin"); }
+        }
+
+        function claimDaily() {
+            let today = new Date().toDateString();
+            if(state.last_daily !== today) {
+                state.streak++; state.coins += state.streak * 1000;
+                state.last_daily = today; sync(); updateUI(); showAlert("Бонус зачислен!");
+            } else showAlert("Заходи завтра!");
         }
 
         async function showPage(p) {
@@ -447,20 +524,48 @@
                 let r = await fetch(`${API_URL}/get_squads`, fetchOpt);
                 let sqs = await r.json();
                 document.getElementById('squad-list').innerHTML = sqs.map((s, i) => `<div class="list-item"><div class="list-rank">${i+1}</div><div class="list-name">${s.name} ${state.squad_id==s.id?'✅':''}</div><div class="list-score">${Math.floor(s.coins).toLocaleString()}</div></div>`).join('');
-                
                 if(state.squad_id > 0) {
-                    document.getElementById('my-squad-section').style.display = 'block';
+                    document.getElementById('my-sq-box').style.display = 'block';
                     let r2 = await fetch(`${API_URL}/get_squad_members/${state.squad_id}`, fetchOpt);
                     let mems = await r2.json();
                     document.getElementById('squad-members').innerHTML = mems.map(m => `<div class="list-item"><div class="list-name">${m.username}</div><div class="list-score">${Math.floor(m.coins).toLocaleString()}</div></div>`).join('');
                 }
             }
+            if(p === 'friends') {
+                let r = await fetch(`${API_URL}/get_friends/${USER_ID}`, fetchOpt);
+                let f = await r.json();
+                document.getElementById('friends-list').innerHTML = f.map(u => `<div class="list-item"><div class="list-name">${u.username}</div><div class="list-score">${Math.floor(u.coins).toLocaleString()}</div></div>`).join('') || "Пока никого нет";
+            }
+        }
+
+        function showInfo(id) {
+            let i = id === 'turbo' ? {name:'Турбо', desc:'x5 силы на 15 сек.'} : SHOP_DATA.find(x => x.id === id);
+            document.getElementById('m-title').innerText = i.name;
+            document.getElementById('m-text').innerText = i.desc;
+            document.getElementById('desc-modal').style.display = 'flex';
         }
 
         function showAlert(t) {
             let a = document.getElementById('custom-alert'); a.innerText = t; a.classList.add('show');
             setTimeout(() => a.classList.remove('show'), 2500);
         }
+
+        function copyLink() {
+            navigator.clipboard.writeText(`https://t.me/NeoTapCoin_bot?start=${USER_ID}`);
+            showAlert("Ссылка скопирована!");
+        }
+
+        function renderDaily() {
+            let h = ''; for(let i=1; i<=8; i++) { let act = state.streak + 1 === i ? 'current' : ''; h += `<div class="daily-day ${act}">День ${i}</div>`; }
+            document.getElementById('daily-rewards').innerHTML = h;
+        }
+
+        function createPollen() {
+            const p = document.createElement('div'); p.className = 'pollen';
+            p.style.width = '3px'; p.style.height = '3px'; p.style.left = Math.random() * 100 + 'vw';
+            document.body.appendChild(p); setTimeout(() => p.remove(), 18000);
+        }
+        setInterval(createPollen, 1500);
 
         setInterval(() => {
             state.coins += (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200) / 100;
