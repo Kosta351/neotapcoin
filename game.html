@@ -28,7 +28,7 @@
         .coin-section { position: relative; margin-top: 20px; perspective: 1000px; }
         .coin { width: 270px; height: 270px; background: url('coin.png') no-repeat center; background-size: contain; transition: transform 0.1s; cursor: pointer; border-radius: 50%; }
         
-        .turbo-mode .coin { filter: drop-shadow(0 0 40px #ff4500); animation: pulse-turbo 0.3s infinite; }
+        .turbo-mode .coin { filter: drop-shadow(0 0 40px #ff4500); animation: pulse-turbo 0.2s infinite; }
         @keyframes pulse-turbo { 0% {transform: scale(1);} 50% {transform: scale(1.04);} 100% {transform: scale(1);} }
         .turbo-timer { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #ff4500; font-weight: 900; font-size: 22px; display: none; text-shadow: 0 0 10px #000; }
         .turbo-mode .turbo-timer { display: block; }
@@ -37,8 +37,8 @@
         .card-list { width: 92%; margin-top: 15px; }
         .card { background: var(--card); border-radius: 18px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
         .card-info { text-align: left; display: flex; align-items: center; gap: 10px; }
-        .info-btn { background: #222; color: var(--gold); border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .buy-btn { background: var(--gold); border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; cursor: pointer; font-size: 13px; }
+        .info-btn { background: #222; color: var(--gold); border: 1px solid #333; width: 22px; height: 22px; border-radius: 50%; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; }
+        .buy-btn { background: var(--gold); border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; cursor: pointer; font-size: 13px; color: #000; }
         .buy-btn:disabled { background: #333; color: #666; }
 
         /* Задания */
@@ -61,7 +61,7 @@
     <div id="custom-alert">Сообщение</div>
     <div id="desc-modal" onclick="this.style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="m-title" style="color:var(--gold)">Инфо</h3>
+            <h3 id="m-title" style="color:var(--gold)"></h3>
             <p id="m-text" style="color:#aaa; line-height:1.6;"></p>
             <button class="buy-btn" style="width:100%; margin-top:15px;" onclick="document.getElementById('desc-modal').style.display='none'">ПОНЯТНО</button>
         </div>
@@ -95,8 +95,10 @@
         <h2 style="margin-top:40px;">🏦 Рынок</h2>
         <div class="card-list">
             <div class="card" style="background: linear-gradient(135deg, #410 0%, #111 100%); border-color:#ff4500;">
-                <div class="card-info"><button class="info-btn" onclick="showInfo('turbo')">?</button>
-                <div><div style="font-weight:700; color:#fff;">🔥 ТУРБО-РЕЖИМ</div><div style="color:var(--gold); font-size:12px;">Бесплатно (3/день)</div></div></div>
+                <div class="card-info">
+                    <div class="info-btn" onclick="showInfo('turbo')">?</div>
+                    <div><div style="font-weight:700; color:#fff;">🔥 ТУРБО-РЕЖИМ</div><div style="color:var(--gold); font-size:12px;">Бесплатно (3/день)</div></div>
+                </div>
                 <button class="buy-btn" id="turbo-start" onclick="activateTurbo()" style="background:#ff4500; color:#fff">ПУСК</button>
             </div>
             <div id="shop-items"></div>
@@ -139,8 +141,6 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         const USER_ID = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 123;
-        
-        // ВАЖНО: Проверь этот адрес!
         const API_URL = "https://nonprovincial-ireland-rubrically.ngrok-free.dev";
         const fetchOpt = { headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' } };
 
@@ -148,7 +148,7 @@
 
         const SHOP_DATA = [
             { id: 'tap', name: 'Нейрочип Клик', price: 1000, ratio: 3, desc: 'Увеличивает силу каждого твоего нажатия на монету.' },
-            { id: 'srv', name: 'Облачная ферма', price: 10000, inc: 1, ratio: 2, desc: 'Позволяет добывать монеты автоматически каждую секунду.' },
+            { id: 'srv', name: 'Облачная ферма', price: 10000, inc: 1, ratio: 2, desc: 'Приносит 1 монету в секунду автоматически.' },
             { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 15, ratio: 2.2, desc: 'Профессиональная станция для мощного майнинга.' },
             { id: 'ai', name: 'Ядро Сингулярности', price: 2000000, inc: 200, ratio: 2.5, desc: 'Вершина технологий NeoTap. Максимальный пассивный доход.' }
         ];
@@ -165,7 +165,7 @@
             try {
                 let r = await fetch(`${API_URL}/get_user/${USER_ID}`, fetchOpt);
                 let d = await r.json();
-                if(!d.error) { Object.assign(state, d); updateUI(); }
+                if(!d.error) { Object.assign(state, d); updateUI(); renderShop(); }
             } catch(e) { showAlert("Ошибка сервера"); }
         }
 
@@ -189,7 +189,7 @@
             let lEl = document.getElementById('league-name');
             lEl.innerText = l.n + ' лига'; lEl.style.color = l.c;
             
-            renderShop(); renderDaily();
+            renderDaily();
         }
 
         function renderShop() {
@@ -198,7 +198,7 @@
                 let lvl = i.id === 'tap' ? state.tapLvl - 1 : state[i.id + 'Lvl'];
                 let p = Math.floor(i.price * Math.pow(i.ratio, lvl));
                 h += `<div class="card"><div class="card-info">
-                    <button class="info-btn" onclick="showInfo('${i.id}')">?</button>
+                    <div class="info-btn" onclick="showInfo('${i.id}')">?</div>
                     <div><b>${i.name}</b><div style="color:var(--gold);">💰 ${p.toLocaleString()}</div></div>
                 </div><button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
             });
@@ -209,15 +209,12 @@
             let pwr = state.isTurbo ? state.tapLvl * 5 : state.tapLvl;
             if(state.energy >= state.tapLvl || state.isTurbo) {
                 state.coins += pwr; if(!state.isTurbo) state.energy -= state.tapLvl;
-                
                 const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
                 const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-                
                 const rect = coinBtn.getBoundingClientRect();
                 const rotX = (clientY - rect.top - rect.height/2)/10;
                 const rotY = (clientX - rect.left - rect.width/2)/10;
                 coinBtn.style.transform = `perspective(1000px) rotateX(${-rotX}deg) rotateY(${rotY}deg) scale(0.96)`;
-                
                 showAnim(clientX, clientY, '+' + pwr); updateUI();
                 tg.HapticFeedback.impactOccurred('medium');
             }
@@ -233,7 +230,7 @@
             if(state.coins >= p) {
                 state.coins -= p;
                 if(id === 'tap') state.tapLvl++; else state[id + 'Lvl']++;
-                updateUI(); sync(); showAlert("Улучшено!");
+                renderShop(); updateUI(); sync(); showAlert("Улучшено!");
             } else showAlert("Мало монет!");
         }
 
@@ -272,6 +269,7 @@
             document.getElementById(p).classList.add('active');
             const map = {game:0, top:1, shop:2, tasks:3, friends:4};
             document.querySelectorAll('.nav-item')[map[p]].classList.add('active');
+            if(p === 'shop') renderShop();
             if(p === 'top') {
                 let r = await fetch(`${API_URL}/get_top`, fetchOpt);
                 let top = await r.json();
@@ -285,7 +283,7 @@
         }
 
         function showInfo(id) {
-            let i = id === 'turbo' ? {name:'Турбо-режим', desc:'x5 тап на 15 сек. Не тратит энергию.'} : SHOP_DATA.find(x => x.id === id);
+            let i = id === 'turbo' ? {name:'Турбо-режим', desc:'x5 тап на 15 сек. Не тратит энергию. 3 раза в день.'} : SHOP_DATA.find(x => x.id === id);
             document.getElementById('m-title').innerText = i.name;
             document.getElementById('m-text').innerText = i.desc;
             document.getElementById('desc-modal').style.display = 'flex';
@@ -310,7 +308,6 @@
             document.getElementById('daily-rewards').innerHTML = h;
         }
 
-        // Плавная анимация
         setInterval(() => {
             state.coins += (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200) / 100;
             if(state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.01);
@@ -321,8 +318,8 @@
         const coinBtn = document.getElementById('coin-btn');
         coinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); });
         coinBtn.addEventListener('mousedown', handleTap);
-        window.addEventListener('mouseup', () => coinBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)');
-        window.addEventListener('touchend', () => coinBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)');
+        window.addEventListener('mouseup', () => coinBtn.style.transform = 'scale(1)');
+        window.addEventListener('touchend', () => coinBtn.style.transform = 'scale(1)');
         loadData();
     </script>
 </body>
