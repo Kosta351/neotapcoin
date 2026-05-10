@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeoTapCoin Premium Final</title>
+    <title>NeoTapCoin Ultimate Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -21,15 +21,15 @@
 
         /* Шапка */
         .header { margin-top: 30px; text-align: center; width: 100%; }
-        #league-name { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+        #league-name { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
         #balance { font-size: 48px; font-weight: 900; color: var(--gold); text-shadow: 0 0 20px rgba(243, 186, 47, 0.4); margin: 5px 0; }
 
-        /* Монета и Анимации */
+        /* Монета */
         .coin-section { position: relative; margin-top: 20px; perspective: 1000px; }
         .coin { width: 270px; height: 270px; background: url('coin.png') no-repeat center; background-size: contain; transition: transform 0.1s; cursor: pointer; border-radius: 50%; }
         
-        .turbo-mode .coin { filter: drop-shadow(0 0 40px #ff4500); animation: turbo-pulse 0.2s infinite; }
-        @keyframes turbo-pulse { 0% {transform: scale(1);} 50% {transform: scale(1.03);} 100% {transform: scale(1);} }
+        .turbo-mode .coin { filter: drop-shadow(0 0 40px #ff4500); animation: pulse-turbo 0.3s infinite; }
+        @keyframes pulse-turbo { 0% {transform: scale(1);} 50% {transform: scale(1.04);} 100% {transform: scale(1);} }
         .turbo-timer { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #ff4500; font-weight: 900; font-size: 22px; display: none; text-shadow: 0 0 10px #000; }
         .turbo-mode .turbo-timer { display: block; }
 
@@ -39,14 +39,15 @@
         .card-info { text-align: left; display: flex; align-items: center; gap: 10px; }
         .info-btn { background: #222; color: var(--gold); border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .buy-btn { background: var(--gold); border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; cursor: pointer; font-size: 13px; }
-        
+        .buy-btn:disabled { background: #333; color: #666; }
+
         /* Задания */
         .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 92%; margin-top: 10px; }
         .daily-day { background: #111; border: 1px solid #222; padding: 10px; border-radius: 12px; font-size: 10px; text-align: center; color: #666; }
         .daily-day.current { border-color: var(--gold); color: #fff; background: rgba(243, 186, 47, 0.1); }
 
-        /* Модалки и Алерт */
-        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a1a; border: 1px solid var(--gold); padding: 12px 25px; border-radius: 15px; z-index: 5000; transition: 0.4s; font-weight: 700; box-shadow: 0 10px 30px #000; }
+        /* Алерт и Модалка */
+        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a1a; border: 1px solid var(--gold); padding: 12px 25px; border-radius: 15px; z-index: 5000; transition: 0.4s; font-weight: 700; box-shadow: 0 10px 30px #000; text-align: center; }
         #custom-alert.show { transform: translateX(-50%) translateY(0); }
         #desc-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 4000; display: none; align-items: center; justify-content: center; }
         .modal-content { background: #151515; width: 75%; padding: 30px; border-radius: 25px; border: 1px solid #333; text-align: center; }
@@ -60,7 +61,7 @@
     <div id="custom-alert">Сообщение</div>
     <div id="desc-modal" onclick="this.style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="m-title" style="color:var(--gold)">Инфо</h3>
+            <h3 id="m-title" style="color:var(--gold)"></h3>
             <p id="m-text" style="color:#aaa; line-height:1.6;"></p>
             <button class="buy-btn" style="width:100%; margin-top:15px;" onclick="document.getElementById('desc-modal').style.display='none'">ПОНЯТНО</button>
         </div>
@@ -119,7 +120,7 @@
     <div id="friends" class="page">
         <h2 style="margin-top:40px;">👥 Твоя сеть</h2>
         <div style="background:#111; padding:25px; border-radius:24px; width:85%; border:1px solid #222; text-align:center;">
-            <p style="color:#aaa; font-size:14px;">+10,000 за друга, +5,000 другу</p>
+            <p style="color:#aaa; font-size:14px;">+10,000 за друга, +5,000 тебе</p>
             <button class="buy-btn" style="width:100%; padding:15px;" onclick="copyLink()">ПРИГЛАСИТЬ</button>
         </div>
         <div id="friends-list" class="list-container"></div>
@@ -144,9 +145,9 @@
 
         const SHOP = [
             { id: 'tap', name: 'Нейрочип Клик', price: 1000, ratio: 3, desc: 'Увеличивает силу каждого твоего нажатия.' },
-            { id: 'srv', name: 'Облачная ферма', price: 10000, inc: 1, ratio: 2, desc: 'Позволяет добывать монеты автоматически.' },
-            { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 20, ratio: 2.2, desc: 'Профессиональная станция для майнинга.' },
-            { id: 'ai', name: 'Ядро ИИ', price: 2000000, inc: 250, ratio: 2.5, desc: 'Максимальный уровень пассивной добычи.' }
+            { id: 'srv', name: 'Облачная ферма', price: 10000, inc: 1, ratio: 2, desc: 'Позволяет добывать монеты автоматически каждую секунду.' },
+            { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 15, ratio: 2.2, desc: 'Профессиональная станция для мощного майнинга.' },
+            { id: 'ai', name: 'Ядро ИИ', price: 2000000, inc: 200, ratio: 2.5, desc: 'Вершина технологий NeoTap. Максимальный пассивный доход.' }
         ];
 
         const LEAGUES = [
@@ -176,8 +177,7 @@
             document.getElementById('p-inc').innerText = state.mineLvl;
             document.getElementById('tap-info').innerText = 'Тап x' + (state.isTurbo ? state.tapLvl * 5 : state.tapLvl);
             document.getElementById('t-left').innerText = `Зарядов: ${state.turbo}`;
-            if(state.turbo <= 0) document.getElementById('turbo-start').disabled = true;
-
+            
             let l = [...LEAGUES].reverse().find(x => state.coins >= x.min);
             let lEl = document.getElementById('league-name');
             lEl.innerText = l.n + ' лига'; lEl.style.color = l.c;
@@ -209,24 +209,18 @@
             let pwr = state.isTurbo ? state.tapLvl * 5 : state.tapLvl;
             if(state.energy >= state.tapLvl || state.isTurbo) {
                 state.coins += pwr; if(!state.isTurbo) state.energy -= state.tapLvl;
-                let x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-                let y = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
                 
-                // 3D наклон
+                const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+                
                 const rect = coinBtn.getBoundingClientRect();
-                const rotX = (y - rect.top - rect.height/2) / 10;
-                const rotY = (x - rect.left - rect.width/2) / 10;
-                coinBtn.style.transform = `perspective(1000px) rotateX(${-rotX}deg) rotateY(${rotY}deg) scale(0.95)`;
+                const x = (clientX - rect.left - rect.width/2)/10;
+                const y = (clientY - rect.top - rect.height/2)/10;
+                coinBtn.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg) scale(0.95)`;
                 
-                showAnim(x, y, '+' + pwr); updateUI();
+                showAnim(clientX, clientY, '+' + pwr); updateUI();
                 tg.HapticFeedback.impactOccurred('medium');
             }
-        }
-
-        function showAnim(x, y, t) {
-            let d = document.createElement('div'); d.className = 'tap-anim'; d.innerText = t;
-            d.style.left = (x - 20) + 'px'; d.style.top = (y - 40) + 'px';
-            document.body.appendChild(d); setTimeout(() => d.remove(), 700);
         }
 
         function buy(id, p) {
@@ -250,7 +244,7 @@
                     tl--; document.getElementById('t-timer').innerText = tl + 'с';
                     if(tl <= 0) { clearInterval(int); state.isTurbo = false; document.body.classList.remove('turbo-mode'); showPage('shop'); updateUI(); }
                 }, 1000);
-                save(); updateUI();
+                saveDataLocally(); updateUI();
             }
         }
 
@@ -259,8 +253,8 @@
             let d = await r.json();
             if(d.status === 'member') {
                 state.coins += 10000; document.getElementById('sub-btn').disabled = true;
-                updateUI(); sync(); showAlert("Награда 10,000 получена!");
-            } else { showAlert("Подпишись на канал!"); window.open("https://t.me/NeoTapCoin"); }
+                updateUI(); sync(); showAlert("Бонус получен!");
+            } else { showAlert("Подпишись на канал!"); tg.openTelegramLink("https://t.me/NeoTapCoin"); }
         }
 
         function claimDaily() {
@@ -290,7 +284,7 @@
         }
 
         function showInfo(id) {
-            let i = id === 'turbo' ? {name:'Турбо', desc:'x5 тап на 15 сек. Не тратит энергию.'} : SHOP.find(x => x.id === id);
+            let i = id === 'turbo' ? {name:'Турбо-режим', desc:'x5 тап на 15 сек. Не тратит энергию. 3 раза в день.'} : SHOP.find(x => x.id === id);
             document.getElementById('m-title').innerText = i.name;
             document.getElementById('m-text').innerText = i.desc;
             document.getElementById('desc-modal').style.display = 'flex';
@@ -299,6 +293,12 @@
         function showAlert(t) {
             let a = document.getElementById('custom-alert'); a.innerText = t; a.classList.add('show');
             setTimeout(() => a.classList.remove('show'), 2000);
+        }
+
+        function showAnim(x, y, t) {
+            let d = document.createElement('div'); d.className = 'tap-anim'; d.innerText = t;
+            d.style.left = (x - 20) + 'px'; d.style.top = (y - 40) + 'px';
+            document.body.appendChild(d); setTimeout(() => d.remove(), 700);
         }
 
         function copyLink() {
