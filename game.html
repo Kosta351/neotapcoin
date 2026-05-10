@@ -194,7 +194,7 @@
         }
         .buy-btn:active { transform: translateY(2px); box-shadow: none; }
 
-        /* СПИСКИ (ТОП И ДРУЗЬЯ) - ТЕПЕРЬ С Flexbox для ровного вида */
+        /* СПИСКИ (ТОП И ДРУЗЬЯ) */
         .list-item { 
             background: var(--card); border-radius: 22px; padding: 18px; margin-bottom: 12px; 
             display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.04); 
@@ -203,14 +203,6 @@
         .list-rank { font-weight: 900; color: var(--gold); width: 40px; font-size: 20px; }
         .list-name { flex-grow: 1; font-weight: 700; font-size: 16px; text-align: left; }
         .list-score { font-weight: 900; color: var(--gold); font-size: 17px; text-align: right; }
-
-        /* ЕЖЕДНЕВНЫЕ НАГРАДЫ */
-        .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 92%; margin-top: 15px; }
-        .daily-day { 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); 
-            padding: 16px; border-radius: 18px; font-size: 12px; text-align: center; color: #666;
-        }
-        .daily-day.current { border-color: var(--gold); color: #fff; background: rgba(243, 186, 47, 0.18); box-shadow: 0 0 20px rgba(243, 186, 47, 0.15); }
 
         /* КРИПТО И ПРОГНОЗ */
         .crypto-card { 
@@ -223,12 +215,13 @@
             border: 2px solid #444; color: #fff; text-align: center; font-size: 20px; 
             font-weight: 900; margin-bottom: 15px; box-sizing: border-box;
         }
+        .bet-input:focus { border-color: var(--gold); outline: none; }
 
         /* МОДАЛКИ И УВЕДОМЛЕНИЯ */
         #custom-alert { 
             position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-180px); 
             background: rgba(25, 25, 25, 0.98); backdrop-filter: blur(20px); border: 1px solid var(--gold); 
-            padding: 18px 40px; border-radius: 24px; z-index: 8000; transition: 0.6s; 
+            padding: 18px 40px; border-radius: 24px; z-index: 8000; transition: 0.6s cubic-bezier(0.17, 0.89, 0.32, 1.49); 
             font-weight: 800; box-shadow: 0 25px 60px rgba(0,0,0,0.9); text-align: center; pointer-events: none;
         }
         #custom-alert.show { transform: translateX(-50%) translateY(0); }
@@ -243,14 +236,15 @@
         /* ЭФФЕКТЫ ТАПА */
         .tap-anim { 
             position: absolute; color: #fff; font-weight: 900; font-size: 44px; 
-            pointer-events: none; animation: floatSpark 0.9s forwards; 
+            pointer-events: none; animation: floatSpark 0.9s cubic-bezier(0.2, 1, 0.2, 1) forwards; 
             z-index: 200; text-shadow: 0 0 25px var(--gold);
         }
-        @keyframes floatSpark { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-180px); } }
+        @keyframes floatSpark { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-180px) scale(1.6); } }
         
-        .particle { position: absolute; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 150; animation: partOut 0.7s forwards; }
+        .particle { position: absolute; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 150; animation: partOut 0.7s ease-out forwards; }
         @keyframes partOut { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
 
+        /* ПЛАВНЫЙ ИНДИКАТОР ЭНЕРГИИ */
         #e-fill { transition: width 0.2s linear; }
     </style>
 </head>
@@ -267,7 +261,7 @@
         <button class="buy-btn" style="padding: 25px 80px; font-size: 20px;" onclick="document.getElementById('league-up-modal').style.display='none'">К ПОБЕДАМ!</button>
     </div>
 
-    <!-- СТРАНИЦЫ -->
+    <!-- ГЛАВНЫЙ ЭКРАН (ИГРА) -->
     <div id="game" class="page active">
         <div class="header">
             <div id="league-name">Бронзовая лига</div>
@@ -287,7 +281,7 @@
         <div style="width: 85%; margin-top: auto; margin-bottom: 40px;">
             <div style="height: 14px; background: rgba(255,255,255,0.04); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);"><div id="e-fill" style="width: 100%; height: 100%; background: var(--gold);"></div></div>
             <div style="display:flex; justify-content: space-between; margin-top:14px; font-size:14px; font-weight:900; color:#555;">
-                <span>⚡️ <span id="e-val">1000</span> / 1000</span>
+                <span>⚡️ <span id="e-val" style="color:#888;">1000</span> / 1000</span>
                 <span id="tap-info" style="color:var(--gold)">x1 МОЩНОСТЬ</span>
             </div>
         </div>
@@ -298,42 +292,46 @@
         <h2 style="margin-top:45px; letter-spacing:1px;">💎 Crypto Center</h2>
         <div class="crypto-card">
             <div style="font-size:12px; color:#666; margin-bottom:12px; font-weight:800; letter-spacing:2px;">ВАША СТАВКА</div>
-            <input type="number" id="bet-amount" class="bet-input" value="1000" min="1000">
+            <input type="number" id="bet-amount" class="bet-input" value="1000" min="1000" step="1000">
             <div style="font-size:14px; color:#555; font-weight:700;">Минимум: 1,000 NeoTap коинов</div>
         </div>
+
         <div class="crypto-card">
+            <div style="font-size:16px; margin-bottom:8px; font-weight:800;">КУРС TON/USD</div>
             <div id="ton-price" style="font-size:38px; font-weight:900; color:#fff; text-shadow:0 0 20px rgba(255,255,255,0.2);">$6.54</div>
+            <div style="font-size:12px; color:#555; margin-top:15px; font-weight:700;">ПРОГНОЗ НА 5 СЕКУНД</div>
+            
             <div style="display:flex; justify-content: space-between; margin-top:25px;">
-                <button class="buy-btn" style="background:#00ff00; width:48%;" onclick="placeBet('up')">ВВЕРХ</button>
-                <button class="buy-btn" style="background:#ff4500; color:#fff; width:48%;" onclick="placeBet('down')">ВНИЗ</button>
+                <button class="buy-btn" style="background:#00ff00; width:48%; color:#000;" onclick="placeBet('up')">ВВЕРХ</button>
+                <button class="buy-btn" style="background:#ff4500; width:48%; color:#fff;" onclick="placeBet('down')">ВНИЗ</button>
             </div>
         </div>
     </div>
 
-    <!-- СКВАДЫ -->
+    <!-- СТРАНИЦА: СКВАДЫ -->
     <div id="squads" class="page">
         <h2 style="margin-top:45px; letter-spacing:1px;">🛡️ Сквады Альянса</h2>
-        <div style="width:90%; display:flex; gap:10px; margin-bottom:20px;">
-            <input type="text" id="sq-input" placeholder="Имя сквада..." style="flex:1; padding:18px; border-radius:20px; background:#111; border:1px solid #333; color:#fff;">
+        <div style="width:92%; margin-bottom:20px; display:flex; gap:10px;">
+            <input type="text" id="sq-input" placeholder="Имя сквада..." style="flex:1; padding:18px; border-radius:20px; background:#111; border:1px solid #333; color:#fff; font-weight:700;">
             <button class="buy-btn" onclick="joinSquad()">ВСТУПИТЬ</button>
         </div>
         <div id="squad-list" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
         <div id="my-sq-box" style="width:92%; display:none; margin-top:20px;">
-            <h3 style="color:var(--gold); font-size:14px; text-align:center;">👥 УЧАСТНИКИ ВАШЕГО СКВАДА</h3>
+            <h3 style="color:var(--gold); font-size:14px; margin-bottom:15px; text-align:center;">👥 УЧАСТНИКИ ВАШЕГО СКВАДА</h3>
             <div id="squad-members" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
         </div>
     </div>
 
-    <!-- ДРУЗЬЯ -->
+    <!-- СТРАНИЦА: ДРУЗЬЯ -->
     <div id="friends" class="page">
         <h2 style="margin-top:45px; letter-spacing:1px;">👥 Реферальная Сеть</h2>
-        <button class="buy-btn" style="width:92%;" onclick="copyLink()">ПОЛУЧИТЬ ССЫЛКУ</button>
-        <div id="friends-list" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center; margin-top:30px;"></div>
+        <button class="buy-btn" style="width:92%; margin-bottom:20px;" onclick="copyLink()">ПОЛУЧИТЬ ССЫЛКУ</button>
+        <div id="friends-list" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
     </div>
 
-    <div id="top" class="page"><h2 style="margin-top:45px;">🏆 Рейтинг</h2><div id="top-list" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
-    <div id="shop" class="page"><h2 style="margin-top:45px;">🏦 Рынок</h2><div id="shop-items" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
-    <div id="tasks" class="page"><h2 style="margin-top:45px;">📅 Квесты</h2><div id="task-list" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
+    <div id="top" class="page"><h2 style="margin-top:45px;">🏆 Глобальный Рейтинг</h2><div id="top-list" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
+    <div id="shop" class="page"><h2 style="margin-top:45px;">🏦 Техно-Рынок</h2><div id="shop-items" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
+    <div id="tasks" class="page"><h2 style="margin-top:45px;">📅 Майнинг Квесты</h2><div id="task-list" class="card-list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
 
     <!-- НАВИГАЦИЯ -->
     <div class="nav">
@@ -352,7 +350,16 @@
         const API_URL = "https://nonprovincial-ireland-rubrically.ngrok-free.dev";
         const fetchOpt = { headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' } };
 
-        let state = { coins: 0, energy: 1000, tapLvl: 1, srvLvl: 0, nodeLvl: 0, aiLvl: 0, turbo: 3, squad_id: 0 };
+        let state = { coins: 0, energy: 1000, tapLvl: 1, srvLvl: 0, nodeLvl: 0, aiLvl: 0, turbo: 3, isTurbo: false, squad_id: 0 };
+        let lastLvlIdx = -1;
+
+        const LEAGUES = [
+            { n: "Бронзовая", min: 0, next: 50000, c: "#cd7f32" },
+            { n: "Серебряная", min: 50000, next: 250000, c: "#c0c0c0" },
+            { n: "Золотая", min: 250000, next: 1000000, c: "#f3ba2f" },
+            { n: "Платиновая", min: 1000000, next: 5000000, c: "#e5e4e2" },
+            { n: "Бриллиантовая", min: 5000000, next: 10000000000, c: "#b9f2ff" }
+        ];
 
         async function loadData() {
             try {
@@ -361,9 +368,49 @@
                 if(!d.error) { 
                     Object.assign(state, d); 
                     updateUI(); 
-                    if(d.offline_earned > 0) showAlert(`💰 Оффлайн: +${Math.floor(d.offline_earned).toLocaleString()}`);
+                    if(d.offline_earned > 0) showAlert(`💰 Оффлайн доход: +${Math.floor(d.offline_earned).toLocaleString()}`);
                 }
+                loadTasks();
+            } catch(e) { showAlert("Ошибка синхронизации"); }
+        }
+
+        async function loadTasks() {
+            try {
+                let r = await fetch(`${API_URL}/get_tasks`, fetchOpt);
+                let tasks = await r.json();
+                document.getElementById('task-list').innerHTML = tasks.map(t => `
+                    <div class="card">
+                        <div class="card-info"><div><div style="font-weight:700; font-size:16px;">${t.title}</div><div style="color:var(--gold); font-weight:900; margin-top:6px;">+${t.reward.toLocaleString()} МОНЕТ</div></div></div>
+                        <button class="buy-btn" onclick="tg.openLink('${t.url}')">ВЫПОЛНИТЬ</button>
+                    </div>
+                `).join('');
             } catch(e) {}
+        }
+
+        async function sync() {
+            try { await fetch(`${API_URL}/update_user/${USER_ID}`, { method: 'POST', ...fetchOpt, body: JSON.stringify(state) }); } catch(e) {}
+        }
+
+        function updateUI() {
+            document.getElementById('balance').innerText = Math.floor(state.coins).toLocaleString();
+            document.getElementById('e-val').innerText = Math.floor(state.energy);
+            document.getElementById('e-fill').style.width = (state.energy / 10) + '%';
+            document.getElementById('p-inc').innerText = (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200).toLocaleString();
+            
+            let curLIdx = [...LEAGUES].reverse().findIndex(x => state.coins >= x.min);
+            let lIdx = LEAGUES.length - 1 - curLIdx;
+            let l = LEAGUES[lIdx];
+            if(lastLvlIdx !== -1 && lIdx > lastLvlIdx) {
+                document.getElementById('new-l-name').innerText = l.n;
+                document.getElementById('league-up-modal').style.display = 'flex';
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+            lastLvlIdx = lIdx;
+            document.getElementById('league-name').innerText = l.n + ' лига';
+            document.getElementById('league-name').style.color = l.c;
+            document.getElementById('aura').style.background = `radial-gradient(circle, ${l.c} 0%, transparent 70%)`;
+            document.getElementById('l-progress').style.width = Math.min(100, ((state.coins-l.min)/(l.next-l.min))*100) + '%';
+            document.getElementById('l-progress').style.background = l.c;
         }
 
         async function showPage(p) {
@@ -373,7 +420,6 @@
             const map = {game:0, top:1, squads:2, crypto:3, shop:4, tasks:5, friends:6};
             document.querySelectorAll('.nav-item')[map[p]].classList.add('active');
 
-            // ПОЛУЧЕНИЕ ДАННЫХ (ИСПРАВЛЕНО)
             if(p === 'friends') {
                 let r = await fetch(`${API_URL}/get_friends/${USER_ID}`, fetchOpt);
                 let f = await r.json();
@@ -432,7 +478,7 @@
 
         async function placeBet(dir) {
             let amt = parseInt(document.getElementById('bet-amount').value);
-            if(amt < 1000) return showAlert("Минимум 1000!");
+            if(isNaN(amt) || amt < 1000) return showAlert("Минимум 1000!");
             if(state.coins < amt) return showAlert("Недостаточно монет!");
             showAlert("Ставка принята...");
             let r = await fetch(`${API_URL}/place_bet/${USER_ID}`, { method: 'POST', ...fetchOpt, body: JSON.stringify({amount: amt}) });
@@ -444,13 +490,6 @@
             }, 3000);
         }
 
-        function updateUI() {
-            document.getElementById('balance').innerText = Math.floor(state.coins).toLocaleString();
-            document.getElementById('e-val').innerText = Math.floor(state.energy);
-            document.getElementById('e-fill').style.width = (state.energy / 10) + '%';
-            document.getElementById('p-inc').innerText = (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200).toLocaleString();
-        }
-
         function handleTap(e) {
             if(state.energy >= state.tapLvl) {
                 state.coins += state.tapLvl; state.energy -= state.tapLvl;
@@ -458,7 +497,7 @@
                 const cY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
                 const rect = coinBtn.getBoundingClientRect();
                 const rX = (cY - rect.top - rect.height/2)/7; const rY = (cX - rect.left - rect.width/2)/7;
-                coinBtn.style.transform = `perspective(1000px) rotateX(${-rX}deg) rotateY(${rY}deg) scale(0.95)`;
+                coinBtn.style.transform = `perspective(1000px) rotateX(${-rX}deg) rotateY(${rY}deg) scale(0.94)`;
                 createParticles(cX, cY); showAnim(cX, cY, '+' + state.tapLvl);
                 updateUI(); tg.HapticFeedback.impactOccurred('light');
             }
@@ -486,7 +525,7 @@
             if(state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.015);
             updateUI();
         }, 10);
-        setInterval(() => { fetch(`${API_URL}/update_user/${USER_ID}`, { method: 'POST', ...fetchOpt, body: JSON.stringify(state) }); }, 5000);
+        setInterval(sync, 5000);
 
         const coinBtn = document.getElementById('coin-btn');
         coinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); });
