@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeoTapCoin Ultimate</title>
+    <title>NeoTapCoin Premium Final</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #f3ba2f; --bg: #050505; --card: #111; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
+        :root { --gold: #f3ba2f; --bg: #050505; --card: #111; --bronze: #cd7f32; --silver: #c0c0c0; --platinum: #e5e4e2; --diamond: #b9f2ff; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; touch-action: manipulation; }
 
+        /* Навигация */
         .nav { position: fixed; bottom: 15px; left: 2.5%; width: 95%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-radius: 20px; display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 0; border: 1px solid #222; z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #666; cursor: pointer; font-weight: 600; }
         .nav-item.active { color: var(--gold); }
@@ -18,38 +19,40 @@
         .page { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 120px; }
         .active { display: flex; }
 
-        /* Главный экран */
+        /* Шапка */
         .header { margin-top: 30px; text-align: center; width: 100%; }
-        #league-name { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-        #balance { font-size: 44px; font-weight: 900; color: var(--gold); margin: 10px 0; }
+        #league-name { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+        #balance { font-size: 48px; font-weight: 900; color: var(--gold); text-shadow: 0 0 20px rgba(243, 186, 47, 0.4); margin: 5px 0; }
 
-        .coin-section { position: relative; margin-top: 30px; }
-        .coin { width: 260px; height: 260px; background: url('coin.png') no-repeat center; background-size: contain; transition: transform 0.1s; cursor: pointer; }
+        /* Монета и Анимации */
+        .coin-section { position: relative; margin-top: 20px; perspective: 1000px; }
+        .coin { width: 270px; height: 270px; background: url('coin.png') no-repeat center; background-size: contain; transition: transform 0.1s; cursor: pointer; border-radius: 50%; }
         
-        .turbo-mode .coin { filter: drop-shadow(0 0 40px #ff4500); animation: pulse 0.3s infinite; }
-        @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.05)} 100%{transform:scale(1)} }
+        .turbo-mode .coin { filter: drop-shadow(0 0 40px #ff4500); animation: turbo-pulse 0.2s infinite; }
+        @keyframes turbo-pulse { 0% {transform: scale(1);} 50% {transform: scale(1.03);} 100% {transform: scale(1);} }
+        .turbo-timer { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #ff4500; font-weight: 900; font-size: 22px; display: none; text-shadow: 0 0 10px #000; }
+        .turbo-mode .turbo-timer { display: block; }
 
-        /* Списки и Карточки */
-        .list-container { width: 92%; margin-top: 15px; }
+        /* Карточки */
+        .card-list { width: 92%; margin-top: 15px; }
         .card { background: var(--card); border-radius: 18px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
-        .card-info { text-align: left; display: flex; align-items: center; gap: 8px; }
-        .info-btn { background: #222; color: var(--gold); border: 1px solid #333; width: 22px; height: 22px; border-radius: 50%; font-weight: 900; cursor: pointer; }
+        .card-info { text-align: left; display: flex; align-items: center; gap: 10px; }
+        .info-btn { background: #222; color: var(--gold); border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .buy-btn { background: var(--gold); border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; cursor: pointer; font-size: 13px; }
         
-        .buy-btn { background: var(--gold); border: none; border-radius: 10px; padding: 10px 15px; font-weight: 800; cursor: pointer; font-size: 12px; }
-        
-        /* Ежедневные награды */
+        /* Задания */
         .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 92%; margin-top: 10px; }
-        .daily-day { background: #111; border: 1px solid #222; padding: 8px; border-radius: 10px; font-size: 10px; text-align: center; color: #666; }
+        .daily-day { background: #111; border: 1px solid #222; padding: 10px; border-radius: 12px; font-size: 10px; text-align: center; color: #666; }
         .daily-day.current { border-color: var(--gold); color: #fff; background: rgba(243, 186, 47, 0.1); }
 
-        /* Уведомления и Модалки */
-        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a1a; border: 1px solid var(--gold); padding: 12px 20px; border-radius: 12px; z-index: 5000; transition: 0.4s; font-weight: 700; }
+        /* Модалки и Алерт */
+        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a1a; border: 1px solid var(--gold); padding: 12px 25px; border-radius: 15px; z-index: 5000; transition: 0.4s; font-weight: 700; box-shadow: 0 10px 30px #000; }
         #custom-alert.show { transform: translateX(-50%) translateY(0); }
         #desc-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 4000; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: #151515; width: 75%; padding: 25px; border-radius: 25px; border: 1px solid #333; text-align: center; }
+        .modal-content { background: #151515; width: 75%; padding: 30px; border-radius: 25px; border: 1px solid #333; text-align: center; }
 
-        .tap-anim { position: absolute; color: #fff; font-weight: 900; font-size: 32px; pointer-events: none; animation: float 0.7s forwards; z-index: 100; text-shadow: 0 0 10px var(--gold); }
-        @keyframes float { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        .tap-anim { position: absolute; color: #fff; font-weight: 900; font-size: 36px; pointer-events: none; animation: float 0.8s forwards; z-index: 100; text-shadow: 0 0 15px var(--gold); }
+        @keyframes float { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-130px) scale(1.2); } }
     </style>
 </head>
 <body>
@@ -57,8 +60,8 @@
     <div id="custom-alert">Сообщение</div>
     <div id="desc-modal" onclick="this.style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="m-title" style="color:var(--gold)"></h3>
-            <p id="m-text" style="color:#aaa; font-size:14px; line-height:1.5;"></p>
+            <h3 id="m-title" style="color:var(--gold)">Инфо</h3>
+            <p id="m-text" style="color:#aaa; line-height:1.6;"></p>
             <button class="buy-btn" style="width:100%; margin-top:15px;" onclick="document.getElementById('desc-modal').style.display='none'">ПОНЯТНО</button>
         </div>
     </div>
@@ -68,10 +71,10 @@
         <div class="header">
             <div id="league-name">Бронзовая лига</div>
             <div id="balance">0</div>
-            <div style="color: #666; font-size: 13px; font-weight: 700;">+<span id="p-inc">0</span> / сек</div>
+            <div style="color: #666; font-size: 13px; font-weight: 700;">Прибыль: +<span id="p-inc">0</span> / сек</div>
         </div>
         <div class="coin-section">
-            <div id="t-timer" style="position: absolute; top: -30px; left: 45%; color: #ff4500; font-weight: 900; display: none;">15с</div>
+            <div id="t-timer" class="turbo-timer">15с</div>
             <div class="coin" id="coin-btn"></div>
         </div>
         <div style="width: 85%; margin-top: auto; margin-bottom: 30px;">
@@ -84,21 +87,16 @@
     </div>
 
     <!-- ТОП -->
-    <div id="top" class="page">
-        <h2 style="margin-top:40px;">Лидеры NeoTap</h2>
-        <div id="top-list" class="list-container"></div>
-    </div>
+    <div id="top" class="page"><h2 style="margin-top:40px;">🏆 Топ игроков</h2><div id="top-list" class="list-container"></div></div>
 
     <!-- МАГАЗИН -->
     <div id="shop" class="page">
-        <h2 style="margin-top:40px;">Рынок</h2>
-        <div class="list-container">
+        <h2 style="margin-top:40px;">🏦 Рынок</h2>
+        <div class="card-list">
             <div class="card" style="background: linear-gradient(135deg, #410 0%, #111 100%); border-color:#ff4500;">
-                <div class="card-info">
-                    <button class="info-btn" onclick="showInfo('turbo')">?</button>
-                    <div><div style="font-weight:700;">🔥 ТУРБО-РЕЖИМ</div><div id="t-left" style="color:var(--gold); font-size:12px;">Зарядов: 3</div></div>
-                </div>
-                <button class="buy-btn" onclick="activateTurbo()" style="background:#ff4500; color:#fff">ПУСК</button>
+                <div class="card-info"><button class="info-btn" onclick="showInfo('turbo')">?</button>
+                <div><div style="font-weight:700;">🔥 ТУРБО-РЕЖИМ</div><div id="t-left" style="color:var(--gold); font-size:12px;">Зарядов: 3</div></div></div>
+                <button class="buy-btn" id="turbo-start" onclick="activateTurbo()" style="background:#ff4500; color:#fff">ПУСК</button>
             </div>
             <div id="shop-items"></div>
         </div>
@@ -106,28 +104,27 @@
 
     <!-- ЗАДАНИЯ -->
     <div id="tasks" class="page">
-        <h2 style="margin-top:40px;">Задания</h2>
+        <h2 style="margin-top:40px;">📅 Задания</h2>
         <div class="daily-grid" id="daily-rewards"></div>
-        <button class="buy-btn" style="width: 90%; margin-top: 15px; padding: 12px;" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
-        <div class="list-container" style="margin-top:20px;">
+        <button class="buy-btn" style="width: 90%; margin-top: 15px; padding: 15px;" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
+        <div class="card-list" style="margin-top:30px;">
             <div class="card">
-                <div class="card-info"><div><div style="font-weight:700;">Подписка на канал</div><div style="color:var(--gold); font-size:12px;">+10,000 монет</div></div></div>
-                <button class="buy-btn" onclick="completeTask(this, 10000)">ПРОВЕРИТЬ</button>
+                <div class="card-info"><div><div style="font-weight:700;">Подписка на канал</div><div style="color:var(--gold);">+10,000</div></div></div>
+                <button class="buy-btn" id="sub-btn" onclick="checkSub()">ПРОВЕРИТЬ</button>
             </div>
         </div>
     </div>
 
     <!-- ДРУЗЬЯ -->
     <div id="friends" class="page">
-        <h2 style="margin-top:40px;">Друзья</h2>
-        <div style="background:#111; padding:20px; border-radius:24px; width:85%; border:1px solid #222; text-align:center;">
-            <p style="color:#aaa; font-size:14px; margin-bottom:15px;">+15,000 монет за каждого друга</p>
+        <h2 style="margin-top:40px;">👥 Твоя сеть</h2>
+        <div style="background:#111; padding:25px; border-radius:24px; width:85%; border:1px solid #222; text-align:center;">
+            <p style="color:#aaa; font-size:14px;">+10,000 за друга, +5,000 другу</p>
             <button class="buy-btn" style="width:100%; padding:15px;" onclick="copyLink()">ПРИГЛАСИТЬ</button>
         </div>
         <div id="friends-list" class="list-container"></div>
     </div>
 
-    <!-- МЕНЮ -->
     <div class="nav">
         <div class="nav-item active" onclick="showPage('game')"><span>🎮</span>Игра</div>
         <div class="nav-item" onclick="showPage('top')"><span>🏆</span>Топ</div>
@@ -141,35 +138,35 @@
         tg.expand();
         const USER_ID = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 123;
         const API_URL = "https://nonprovincial-ireland-rubrically.ngrok-free.dev";
+        const fetchOpt = { headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' } };
 
-        let state = { coins: 0, energy: 1000, tapLvl: 1, mineLvl: 0, turbo: 3, isTurbo: false, streak: 0, lastDaily: '' };
+        let state = { coins: 0, energy: 1000, tapLvl: 1, mineLvl: 0, turbo: 3, isTurbo: false, lastDaily: '', streak: 0 };
 
         const SHOP = [
-            { id: 'tap', name: 'Нейрочип Клик', price: 1000, ratio: 3, desc: 'Увеличивает количество монет за каждое нажатие.' },
-            { id: 'srv', name: 'Облачная ферма', price: 10000, inc: 1, ratio: 2, desc: 'Автоматическая добыча монет в секунду.' },
+            { id: 'tap', name: 'Нейрочип Клик', price: 1000, ratio: 3, desc: 'Увеличивает силу каждого твоего нажатия.' },
+            { id: 'srv', name: 'Облачная ферма', price: 10000, inc: 1, ratio: 2, desc: 'Позволяет добывать монеты автоматически.' },
             { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 20, ratio: 2.2, desc: 'Профессиональная станция для майнинга.' },
-            { id: 'ai', name: 'Ядро ИИ', price: 2000000, inc: 250, ratio: 2.5, desc: 'Вершина технологий. Максимальный пассивный доход.' }
+            { id: 'ai', name: 'Ядро ИИ', price: 2000000, inc: 250, ratio: 2.5, desc: 'Максимальный уровень пассивной добычи.' }
         ];
 
-        // Добавляем специальный заголовок для Ngrok
-        const fetchOptions = {
-            headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' }
-        };
+        const LEAGUES = [
+            { n: "Бронзовая", min: 0, c: "#cd7f32" },
+            { n: "Серебряная", min: 50000, c: "#c0c0c0" },
+            { n: "Золотая", min: 250000, c: "#f3ba2f" },
+            { n: "Платиновая", min: 1000000, c: "#e5e4e2" },
+            { n: "Бриллиантовая", min: 5000000, c: "#b9f2ff" }
+        ];
 
         async function loadData() {
             try {
-                let r = await fetch(`${API_URL}/get_user/${USER_ID}`, fetchOptions);
+                let r = await fetch(`${API_URL}/get_user/${USER_ID}`, fetchOpt);
                 let d = await r.json();
-                if(!d.error) { state.coins = d.coins; state.tapLvl = d.tapLvl; state.mineLvl = d.mineLvl; state.energy = d.energy; }
-                updateUI();
-            } catch(e) { showAlert("Ошибка связи с сервером"); }
+                if(!d.error) { Object.assign(state, d); updateUI(); }
+            } catch(e) { showAlert("Ошибка сервера"); }
         }
 
         async function sync() {
-            try { await fetch(`${API_URL}/update_user/${USER_ID}`, {
-                method: 'POST', ...fetchOptions,
-                body: JSON.stringify({coins: state.coins, tapLvl: state.tapLvl, mineLvl: state.mineLvl, energy: state.energy})
-            }); } catch(e) {}
+            try { await fetch(`${API_URL}/update_user/${USER_ID}`, { method: 'POST', ...fetchOpt, body: JSON.stringify(state) }); } catch(e) {}
         }
 
         function updateUI() {
@@ -179,11 +176,11 @@
             document.getElementById('p-inc').innerText = state.mineLvl;
             document.getElementById('tap-info').innerText = 'Тап x' + (state.isTurbo ? state.tapLvl * 5 : state.tapLvl);
             document.getElementById('t-left').innerText = `Зарядов: ${state.turbo}`;
-            
-            let league = state.coins < 50000 ? {n:'Бронзовая', c:'#cd7f32'} : state.coins < 250000 ? {n:'Серебряная', c:'#c0c0c0'} : {n:'Золотая', c:'#f3ba2f'};
-            let lEl = document.getElementById('league-name');
-            lEl.innerText = league.n + ' лига'; lEl.style.color = league.c;
+            if(state.turbo <= 0) document.getElementById('turbo-start').disabled = true;
 
+            let l = [...LEAGUES].reverse().find(x => state.coins >= x.min);
+            let lEl = document.getElementById('league-name');
+            lEl.innerText = l.n + ' лига'; lEl.style.color = l.c;
             renderShop(); renderDaily();
         }
 
@@ -192,10 +189,9 @@
             SHOP.forEach(i => {
                 let lvl = i.id === 'tap' ? state.tapLvl - 1 : (i.id === 'srv' ? state.mineLvl : 0);
                 let p = Math.floor(i.price * Math.pow(i.ratio, lvl));
-                h += `<div class="card"><div class="card-info">
-                    <button class="info-btn" onclick="showInfo('${i.id}')">?</button>
-                    <div><div style="font-weight:700; color:#eee;">${i.name}</div><div style="color:var(--gold); font-weight:900;">💰 ${p.toLocaleString()}</div></div>
-                </div><button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
+                h += `<div class="card"><div class="card-info"><button class="info-btn" onclick="showInfo('${i.id}')">?</button>
+                <div><b>${i.name}</b><div style="color:var(--gold);">💰 ${p.toLocaleString()}</div></div></div>
+                <button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
             });
             document.getElementById('shop-items').innerHTML = h;
         }
@@ -204,7 +200,7 @@
             let h = '';
             for(let i=1; i<=8; i++) {
                 let active = state.streak + 1 === i ? 'current' : '';
-                h += `<div class="daily-day ${active}">День ${i}<br><b>${i}k</b></div>`;
+                h += `<div class="daily-day ${active}">День ${i}</div>`;
             }
             document.getElementById('daily-rewards').innerHTML = h;
         }
@@ -215,9 +211,22 @@
                 state.coins += pwr; if(!state.isTurbo) state.energy -= state.tapLvl;
                 let x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
                 let y = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+                
+                // 3D наклон
+                const rect = coinBtn.getBoundingClientRect();
+                const rotX = (y - rect.top - rect.height/2) / 10;
+                const rotY = (x - rect.left - rect.width/2) / 10;
+                coinBtn.style.transform = `perspective(1000px) rotateX(${-rotX}deg) rotateY(${rotY}deg) scale(0.95)`;
+                
                 showAnim(x, y, '+' + pwr); updateUI();
                 tg.HapticFeedback.impactOccurred('medium');
             }
+        }
+
+        function showAnim(x, y, t) {
+            let d = document.createElement('div'); d.className = 'tap-anim'; d.innerText = t;
+            d.style.left = (x - 20) + 'px'; d.style.top = (y - 40) + 'px';
+            document.body.appendChild(d); setTimeout(() => d.remove(), 700);
         }
 
         function buy(id, p) {
@@ -225,23 +234,41 @@
                 state.coins -= p;
                 if(id === 'tap') state.tapLvl++;
                 if(id === 'srv') state.mineLvl += 1;
-                if(id === 'node') state.mineLvl += 20;
-                updateUI(); sync();
-                showAlert("Улучшено!");
-            } else { showAlert("Недостаточно монет!"); }
+                if(id === 'node') state.mineLvl += 15;
+                if(id === 'ai') state.mineLvl += 200;
+                updateUI(); sync(); showAlert("Улучшено!");
+            } else showAlert("Мало монет!");
         }
 
         function activateTurbo() {
             if(state.turbo > 0 && !state.isTurbo) {
                 state.turbo--; state.isTurbo = true;
                 showPage('game'); document.body.classList.add('turbo-mode');
-                document.getElementById('t-timer').style.display = 'block';
                 let tl = 15;
+                document.getElementById('t-timer').innerText = tl + 'с';
                 let int = setInterval(() => {
                     tl--; document.getElementById('t-timer').innerText = tl + 'с';
-                    if(tl <= 0) { clearInterval(int); state.isTurbo = false; document.body.classList.remove('turbo-mode'); document.getElementById('t-timer').style.display = 'none'; showPage('shop'); }
+                    if(tl <= 0) { clearInterval(int); state.isTurbo = false; document.body.classList.remove('turbo-mode'); showPage('shop'); updateUI(); }
                 }, 1000);
+                save(); updateUI();
             }
+        }
+
+        async function checkSub() {
+            let r = await fetch(`${API_URL}/check_sub/${USER_ID}`, fetchOpt);
+            let d = await r.json();
+            if(d.status === 'member') {
+                state.coins += 10000; document.getElementById('sub-btn').disabled = true;
+                updateUI(); sync(); showAlert("Награда 10,000 получена!");
+            } else { showAlert("Подпишись на канал!"); window.open("https://t.me/NeoTapCoin"); }
+        }
+
+        function claimDaily() {
+            let today = new Date().toDateString();
+            if(state.lastDaily !== today) {
+                state.streak++; state.coins += state.streak * 1000;
+                state.lastDaily = today; sync(); updateUI(); showAlert("Награда получена!");
+            } else showAlert("Приходи завтра!");
         }
 
         async function showPage(p) {
@@ -250,21 +277,20 @@
             document.getElementById(p).classList.add('active');
             const map = {game:0, top:1, shop:2, tasks:3, friends:4};
             document.querySelectorAll('.nav-item')[map[p]].classList.add('active');
-
             if(p === 'top') {
-                let r = await fetch(`${API_URL}/get_top`, fetchOptions);
+                let r = await fetch(`${API_URL}/get_top`, fetchOpt);
                 let top = await r.json();
                 document.getElementById('top-list').innerHTML = top.map((u, i) => `<div class="card"><b>${i+1}. ${u.username}</b> <span>${Math.floor(u.coins).toLocaleString()}</span></div>`).join('');
             }
             if(p === 'friends') {
-                let r = await fetch(`${API_URL}/get_friends/${USER_ID}`, fetchOptions);
+                let r = await fetch(`${API_URL}/get_friends/${USER_ID}`, fetchOpt);
                 let f = await r.json();
-                document.getElementById('friends-list').innerHTML = f.map(u => `<div class="card"><b>${u.username}</b> <span>${Math.floor(u.coins).toLocaleString()}</span></div>`).join('') || "<p style='color:#444;text-align:center;'>Список пуст</p>";
+                document.getElementById('friends-list').innerHTML = f.map(u => `<div class="card"><b>${u.username}</b> <span>${Math.floor(u.coins).toLocaleString()}</span></div>`).join('') || "<p style='text-align:center;color:#444'>Друзей нет</p>";
             }
         }
 
         function showInfo(id) {
-            let i = id === 'turbo' ? {name:'Турбо', desc:'Умножает силу тапа на 5 и дает бесконечную энергию на 15 секунд.'} : SHOP.find(x => x.id === id);
+            let i = id === 'turbo' ? {name:'Турбо', desc:'x5 тап на 15 сек. Не тратит энергию.'} : SHOP.find(x => x.id === id);
             document.getElementById('m-title').innerText = i.name;
             document.getElementById('m-text').innerText = i.desc;
             document.getElementById('desc-modal').style.display = 'flex';
@@ -275,43 +301,23 @@
             setTimeout(() => a.classList.remove('show'), 2000);
         }
 
-        function showAnim(x, y, t) {
-            let d = document.createElement('div'); d.className = 'tap-anim'; d.innerText = t;
-            d.style.left = x + 'px'; d.style.top = y + 'px';
-            document.body.appendChild(d); setTimeout(() => d.remove(), 700);
-        }
-
-        function completeTask(btn, reward) {
-            state.coins += reward; btn.disabled = true; btn.innerText = "ГОТОВО";
-            updateUI(); sync(); showAlert("Бонус получен!");
-        }
-
-        function claimDaily() {
-            let today = new Date().toDateString();
-            if(state.lastDaily !== today) {
-                state.streak++; state.coins += state.streak * 1000;
-                state.lastDaily = today; updateUI(); sync(); showAlert("Награда получена!");
-            } else showAlert("Заходи завтра!");
-        }
-
         function copyLink() {
             navigator.clipboard.writeText(`https://t.me/NeoTapCoin_bot?start=${USER_ID}`);
             showAlert("Ссылка скопирована!");
         }
 
-        // Плавная энергия и пассивный доход
         setInterval(() => {
-            if(state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.015);
             state.coins += state.mineLvl / 100;
+            if(state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.01);
             updateUI();
         }, 10);
 
         setInterval(sync, 5000);
-
-        const btn = document.getElementById('coin-btn');
-        btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); });
-        btn.addEventListener('mousedown', handleTap);
-
+        const coinBtn = document.getElementById('coin-btn');
+        coinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(e); });
+        coinBtn.addEventListener('mousedown', handleTap);
+        window.addEventListener('mouseup', () => coinBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)');
+        window.addEventListener('touchend', () => coinBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)');
         loadData();
     </script>
 </body>
