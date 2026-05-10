@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeoTapCoin Ultimate Premium</title>
+    <title>NeoTapCoin Ultimate Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -33,7 +33,7 @@
         .turbo-timer { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #ff4500; font-weight: 900; font-size: 22px; display: none; text-shadow: 0 0 10px #000; }
         .turbo-mode .turbo-timer { display: block; }
 
-        /* Карточки */
+        /* Карточки рынка */
         .card-list { width: 92%; margin-top: 15px; }
         .card { background: var(--card); border-radius: 18px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
         .card-info { text-align: left; display: flex; align-items: center; gap: 10px; }
@@ -46,10 +46,10 @@
         .daily-day { background: #111; border: 1px solid #222; padding: 10px; border-radius: 12px; font-size: 10px; text-align: center; color: #666; }
         .daily-day.current { border-color: var(--gold); color: #fff; background: rgba(243, 186, 47, 0.1); }
 
-        /* Алерт и Модалка */
-        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a1a; border: 1px solid var(--gold); padding: 12px 25px; border-radius: 15px; z-index: 5000; transition: 0.4s; font-weight: 700; box-shadow: 0 10px 30px #000; text-align: center; }
+        /* Уведомления и Модалки */
+        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a1a; border: 1px solid var(--gold); padding: 12px 25px; border-radius: 15px; z-index: 6000; transition: 0.4s; font-weight: 700; box-shadow: 0 10px 30px #000; text-align: center; pointer-events: none; }
         #custom-alert.show { transform: translateX(-50%) translateY(0); }
-        #desc-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 4000; display: none; align-items: center; justify-content: center; }
+        #desc-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 5000; display: none; align-items: center; justify-content: center; }
         .modal-content { background: #151515; width: 75%; padding: 30px; border-radius: 25px; border: 1px solid #333; text-align: center; }
 
         .tap-anim { position: absolute; color: #fff; font-weight: 900; font-size: 36px; pointer-events: none; animation: float 0.8s forwards; z-index: 100; text-shadow: 0 0 15px var(--gold); }
@@ -61,7 +61,7 @@
     <div id="custom-alert">Сообщение</div>
     <div id="desc-modal" onclick="this.style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="m-title" style="color:var(--gold)"></h3>
+            <h3 id="m-title" style="color:var(--gold)">Инфо</h3>
             <p id="m-text" style="color:#aaa; line-height:1.6;"></p>
             <button class="buy-btn" style="width:100%; margin-top:15px;" onclick="document.getElementById('desc-modal').style.display='none'">ПОНЯТНО</button>
         </div>
@@ -96,7 +96,7 @@
         <div class="card-list">
             <div class="card" style="background: linear-gradient(135deg, #410 0%, #111 100%); border-color:#ff4500;">
                 <div class="card-info"><button class="info-btn" onclick="showInfo('turbo')">?</button>
-                <div><div style="font-weight:700;">🔥 ТУРБО-РЕЖИМ</div><div id="t-left" style="color:var(--gold); font-size:12px;">Зарядов: 3</div></div></div>
+                <div><div style="font-weight:700; color:#fff;">🔥 ТУРБО-РЕЖИМ</div><div style="color:var(--gold); font-size:12px;">Бесплатно (3/день)</div></div></div>
                 <button class="buy-btn" id="turbo-start" onclick="activateTurbo()" style="background:#ff4500; color:#fff">ПУСК</button>
             </div>
             <div id="shop-items"></div>
@@ -108,19 +108,20 @@
         <h2 style="margin-top:40px;">📅 Задания</h2>
         <div class="daily-grid" id="daily-rewards"></div>
         <button class="buy-btn" style="width: 90%; margin-top: 15px; padding: 15px;" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
-        <div class="card-list" style="margin-top:30px;">
-            <div class="card">
+        <div class="card-list" style="margin-top:30px;" id="task-container">
+            <div class="card" id="chan-task">
                 <div class="card-info"><div><div style="font-weight:700;">Подписка на канал</div><div style="color:var(--gold);">+10,000</div></div></div>
                 <button class="buy-btn" id="sub-btn" onclick="checkSub()">ПРОВЕРИТЬ</button>
             </div>
+            <p id="no-tasks" style="display:none; color:#444; margin-top:20px;">Заданий пока нет...</p>
         </div>
     </div>
 
     <!-- ДРУЗЬЯ -->
     <div id="friends" class="page">
-        <h2 style="margin-top:40px;">👥 Твоя сеть</h2>
+        <h2 style="margin-top:40px;">👥 Твоя команда</h2>
         <div style="background:#111; padding:25px; border-radius:24px; width:85%; border:1px solid #222; text-align:center;">
-            <p style="color:#aaa; font-size:14px;">+10,000 за друга, +5,000 тебе</p>
+            <p style="color:#aaa; font-size:14px;">+10,000 за друга, +5,000 другу</p>
             <button class="buy-btn" style="width:100%; padding:15px;" onclick="copyLink()">ПРИГЛАСИТЬ</button>
         </div>
         <div id="friends-list" class="list-container"></div>
@@ -138,16 +139,18 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         const USER_ID = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 123;
+        
+        // ВАЖНО: Проверь этот адрес!
         const API_URL = "https://nonprovincial-ireland-rubrically.ngrok-free.dev";
         const fetchOpt = { headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' } };
 
-        let state = { coins: 0, energy: 1000, tapLvl: 1, mineLvl: 0, turbo: 3, isTurbo: false, lastDaily: '', streak: 0 };
+        let state = { coins: 0, energy: 1000, tapLvl: 1, srvLvl: 0, nodeLvl: 0, aiLvl: 0, turbo: 3, isTurbo: false, last_daily: '', streak: 0, sub_done: 0 };
 
-        const SHOP = [
-            { id: 'tap', name: 'Нейрочип Клик', price: 1000, ratio: 3, desc: 'Увеличивает силу каждого твоего нажатия.' },
+        const SHOP_DATA = [
+            { id: 'tap', name: 'Нейрочип Клик', price: 1000, ratio: 3, desc: 'Увеличивает силу каждого твоего нажатия на монету.' },
             { id: 'srv', name: 'Облачная ферма', price: 10000, inc: 1, ratio: 2, desc: 'Позволяет добывать монеты автоматически каждую секунду.' },
             { id: 'node', name: 'Квантовый Узел', price: 150000, inc: 15, ratio: 2.2, desc: 'Профессиональная станция для мощного майнинга.' },
-            { id: 'ai', name: 'Ядро ИИ', price: 2000000, inc: 200, ratio: 2.5, desc: 'Вершина технологий NeoTap. Максимальный пассивный доход.' }
+            { id: 'ai', name: 'Ядро Сингулярности', price: 2000000, inc: 200, ratio: 2.5, desc: 'Вершина технологий NeoTap. Максимальный пассивный доход.' }
         ];
 
         const LEAGUES = [
@@ -174,35 +177,32 @@
             document.getElementById('balance').innerText = Math.floor(state.coins).toLocaleString();
             document.getElementById('e-val').innerText = Math.floor(state.energy);
             document.getElementById('e-fill').style.width = (state.energy / 10) + '%';
-            document.getElementById('p-inc').innerText = state.mineLvl;
+            document.getElementById('p-inc').innerText = (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200);
             document.getElementById('tap-info').innerText = 'Тап x' + (state.isTurbo ? state.tapLvl * 5 : state.tapLvl);
-            document.getElementById('t-left').innerText = `Зарядов: ${state.turbo}`;
             
+            if(state.sub_done === 1) {
+                document.getElementById('chan-task').style.display = 'none';
+                document.getElementById('no-tasks').style.display = 'block';
+            }
+
             let l = [...LEAGUES].reverse().find(x => state.coins >= x.min);
             let lEl = document.getElementById('league-name');
             lEl.innerText = l.n + ' лига'; lEl.style.color = l.c;
+            
             renderShop(); renderDaily();
         }
 
         function renderShop() {
             let h = '';
-            SHOP.forEach(i => {
-                let lvl = i.id === 'tap' ? state.tapLvl - 1 : (i.id === 'srv' ? state.mineLvl : 0);
+            SHOP_DATA.forEach(i => {
+                let lvl = i.id === 'tap' ? state.tapLvl - 1 : state[i.id + 'Lvl'];
                 let p = Math.floor(i.price * Math.pow(i.ratio, lvl));
-                h += `<div class="card"><div class="card-info"><button class="info-btn" onclick="showInfo('${i.id}')">?</button>
-                <div><b>${i.name}</b><div style="color:var(--gold);">💰 ${p.toLocaleString()}</div></div></div>
-                <button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
+                h += `<div class="card"><div class="card-info">
+                    <button class="info-btn" onclick="showInfo('${i.id}')">?</button>
+                    <div><b>${i.name}</b><div style="color:var(--gold);">💰 ${p.toLocaleString()}</div></div>
+                </div><button class="buy-btn" onclick="buy('${i.id}', ${p})">КУПИТЬ</button></div>`;
             });
             document.getElementById('shop-items').innerHTML = h;
-        }
-
-        function renderDaily() {
-            let h = '';
-            for(let i=1; i<=8; i++) {
-                let active = state.streak + 1 === i ? 'current' : '';
-                h += `<div class="daily-day ${active}">День ${i}</div>`;
-            }
-            document.getElementById('daily-rewards').innerHTML = h;
         }
 
         function handleTap(e) {
@@ -214,22 +214,25 @@
                 const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
                 
                 const rect = coinBtn.getBoundingClientRect();
-                const x = (clientX - rect.left - rect.width/2)/10;
-                const y = (clientY - rect.top - rect.height/2)/10;
-                coinBtn.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg) scale(0.95)`;
+                const rotX = (clientY - rect.top - rect.height/2)/10;
+                const rotY = (clientX - rect.left - rect.width/2)/10;
+                coinBtn.style.transform = `perspective(1000px) rotateX(${-rotX}deg) rotateY(${rotY}deg) scale(0.96)`;
                 
                 showAnim(clientX, clientY, '+' + pwr); updateUI();
                 tg.HapticFeedback.impactOccurred('medium');
             }
         }
 
+        function showAnim(x, y, t) {
+            let d = document.createElement('div'); d.className = 'tap-anim'; d.innerText = t;
+            d.style.left = (x - 20) + 'px'; d.style.top = (y - 40) + 'px';
+            document.body.appendChild(d); setTimeout(() => d.remove(), 700);
+        }
+
         function buy(id, p) {
             if(state.coins >= p) {
                 state.coins -= p;
-                if(id === 'tap') state.tapLvl++;
-                if(id === 'srv') state.mineLvl += 1;
-                if(id === 'node') state.mineLvl += 15;
-                if(id === 'ai') state.mineLvl += 200;
+                if(id === 'tap') state.tapLvl++; else state[id + 'Lvl']++;
                 updateUI(); sync(); showAlert("Улучшено!");
             } else showAlert("Мало монет!");
         }
@@ -244,7 +247,6 @@
                     tl--; document.getElementById('t-timer').innerText = tl + 'с';
                     if(tl <= 0) { clearInterval(int); state.isTurbo = false; document.body.classList.remove('turbo-mode'); showPage('shop'); updateUI(); }
                 }, 1000);
-                saveDataLocally(); updateUI();
             }
         }
 
@@ -252,16 +254,15 @@
             let r = await fetch(`${API_URL}/check_sub/${USER_ID}`, fetchOpt);
             let d = await r.json();
             if(d.status === 'member') {
-                state.coins += 10000; document.getElementById('sub-btn').disabled = true;
-                updateUI(); sync(); showAlert("Бонус получен!");
+                state.coins += 10000; state.sub_done = 1; updateUI(); sync(); showAlert("Бонус 10,000 получен!");
             } else { showAlert("Подпишись на канал!"); tg.openTelegramLink("https://t.me/NeoTapCoin"); }
         }
 
         function claimDaily() {
             let today = new Date().toDateString();
-            if(state.lastDaily !== today) {
+            if(state.last_daily !== today) {
                 state.streak++; state.coins += state.streak * 1000;
-                state.lastDaily = today; sync(); updateUI(); showAlert("Награда получена!");
+                state.last_daily = today; sync(); updateUI(); showAlert("Награда за вход получена!");
             } else showAlert("Приходи завтра!");
         }
 
@@ -284,7 +285,7 @@
         }
 
         function showInfo(id) {
-            let i = id === 'turbo' ? {name:'Турбо-режим', desc:'x5 тап на 15 сек. Не тратит энергию. 3 раза в день.'} : SHOP.find(x => x.id === id);
+            let i = id === 'turbo' ? {name:'Турбо-режим', desc:'x5 тап на 15 сек. Не тратит энергию.'} : SHOP_DATA.find(x => x.id === id);
             document.getElementById('m-title').innerText = i.name;
             document.getElementById('m-text').innerText = i.desc;
             document.getElementById('desc-modal').style.display = 'flex';
@@ -295,19 +296,23 @@
             setTimeout(() => a.classList.remove('show'), 2000);
         }
 
-        function showAnim(x, y, t) {
-            let d = document.createElement('div'); d.className = 'tap-anim'; d.innerText = t;
-            d.style.left = (x - 20) + 'px'; d.style.top = (y - 40) + 'px';
-            document.body.appendChild(d); setTimeout(() => d.remove(), 700);
-        }
-
         function copyLink() {
             navigator.clipboard.writeText(`https://t.me/NeoTapCoin_bot?start=${USER_ID}`);
             showAlert("Ссылка скопирована!");
         }
 
+        function renderDaily() {
+            let h = '';
+            for(let i=1; i<=8; i++) {
+                let active = state.streak + 1 === i ? 'current' : '';
+                h += `<div class="daily-day ${active}">День ${i}</div>`;
+            }
+            document.getElementById('daily-rewards').innerHTML = h;
+        }
+
+        // Плавная анимация
         setInterval(() => {
-            state.coins += state.mineLvl / 100;
+            state.coins += (state.srvLvl * 1 + state.nodeLvl * 15 + state.aiLvl * 200) / 100;
             if(state.energy < 1000) state.energy = Math.min(1000, state.energy + 0.01);
             updateUI();
         }, 10);
